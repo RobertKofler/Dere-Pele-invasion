@@ -1,0 +1,305 @@
+---
+title: "Motifs-supplement-main"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Preprocess
+```{bash eval=FALSE}
+source ~/.zshrc 
+script="/Users/rokofler/dev/te-tools/ere/smallRNA-U-bias-family.py"
+mi=23
+ma=29
+inf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/raw-bam"
+ouf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/06.2-U-bias-family/raw"
+fam="BS"
+#--pi-min $mi --pi-max $ma
+
+# Rep 1
+samtools view $inf/dere_ovaries_R1G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G1 --family $fam > $ouf/${fam}-R1-G1.txt
+samtools view $inf/dere_R1G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G5 --family $fam > $ouf/${fam}-R1-G5.txt
+samtools view $inf/dere_ovaries_R1G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G10 --family $fam > $ouf/${fam}-R1-G10.txt
+samtools view $inf/dere_R1G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G15 --family $fam > $ouf/${fam}-R1-G15.txt
+samtools view $inf/dere_R1G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G20 --family $fam > $ouf/${fam}-R1-G20.txt
+samtools view $inf/dere_R1G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G25 --family $fam > $ouf/${fam}-R1-G25.txt
+samtools view $inf/dere_R1G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G30 --family $fam > $ouf/${fam}-R1-G30.txt
+samtools view $inf/dere_ovaries_R1G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G35 --family $fam > $ouf/${fam}-R1-G35.txt
+samtools view $inf/dere_R1G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G40 --family $fam > $ouf/${fam}-R1-G40.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G45 --family $fam > $ouf/${fam}-R1-G45.txt
+
+# Rep 2
+samtools view $inf/dere_ovaries_R2G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G1  --family $fam > $ouf/${fam}-R2-G1.txt
+samtools view $inf/dere_R2G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G5  --family $fam > $ouf/${fam}-R2-G5.txt
+samtools view $inf/dere_ovaries_R2G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G10  --family $fam > $ouf/${fam}-R2-G10.txt
+samtools view $inf/dere_R2G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G15  --family $fam > $ouf/${fam}-R2-G15.txt
+samtools view $inf/dere_R2G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G20  --family $fam > $ouf/${fam}-R2-G20.txt
+samtools view $inf/dere_R2G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G25  --family $fam > $ouf/${fam}-R2-G25.txt
+samtools view $inf/dere_R2G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G30  --family $fam > $ouf/${fam}-R2-G30.txt
+samtools view $inf/dere_ovaries_R2G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G35  --family $fam > $ouf/${fam}-R2-G35.txt
+samtools view $inf/dere_R2G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G40  --family $fam > $ouf/${fam}-R2-G40.txt
+samtools view $inf/dere_R2G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G45  --family $fam > $ouf/${fam}-R2-G45.txt
+
+# Rep 4
+samtools view $inf/dere_ovaries_R4G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G1  --family $fam > $ouf/${fam}-R4-G1.txt
+samtools view $inf/dere_R4G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G5  --family $fam > $ouf/${fam}-R4-G5.txt
+samtools view $inf/dere_ovaries_R4G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G10  --family $fam > $ouf/${fam}-R4-G10.txt
+samtools view $inf/dere_R4G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G15  --family $fam  > $ouf/${fam}-R4-G15.txt
+samtools view $inf/dere_R4G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G20  --family $fam > $ouf/${fam}-R4-G20.txt
+samtools view $inf/dere_R4G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G25  --family $fam > $ouf/${fam}-R4-G25.txt
+samtools view $inf/dere_R4G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G30  --family $fam > $ouf/${fam}-R4-G30.txt
+samtools view $inf/dere_ovaries_R4G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G35  --family $fam > $ouf/${fam}-R4-G35.txt
+samtools view $inf/dere_R4G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G40  --family $fam > $ouf/${fam}-R4-G40.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G45  --family $fam  > $ouf/${fam}-R4-G45.txt
+cat BS* > bs-forr.txt
+```
+
+# Visualize for supplement
+## common
+```{R}
+library(ggplot2)
+library(ggseqlogo)
+library(tidyverse)
+
+
+
+infile<-"/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/06.2-U-bias-family/raw-BS/bs-forr.txt"
+t<-read.table(infile)
+# R1-G1	BS	piRNA	se	P	8316	A,C,T,G
+names(t)<-c("sid","te","smtype","strand","quatsch","coverage","order","matrix")
+t<-subset(t,te=="BS")
+t$matrix<-as.character(t$matrix)
+
+
+
+# "R1-G10","R2-G10","R4-G10",
+samples<-c("R1-G15","R2-G15","R4-G15","R1-G20","R2-G20","R4-G20",
+           "R1-G25","R2-G25","R4-G25","R1-G30","R2-G30","R4-G30","R1-G35","R2-G35","R4-G35",
+           "R1-G40","R2-G40","R4-G40","R1-G45","R2-G45","R4-G45")
+           
+
+add_data <- function(li,t,target_sid)
+{
+
+  suse<-subset(t,sid==target_sid)
+
+  susev<-str_split(suse$matrix, ",", n = Inf, simplify = FALSE)
+  susen<-as.numeric(susev[[1]])
+  susem<-matrix(susen,nrow=4,byrow = F)
+  rownames(susem)<-c("A","C","U","G")
+  li[[target_sid]]<-susem[,1:15]
+  return(li)
+  
+}
+```
+
+## piRNA - sense
+
+
+```{r}
+### Set the variables
+active_strand<-"se"
+active_smtype<-"piRNA"
+ts<-subset(t,smtype==active_smtype & strand==active_strand)
+
+data=list()
+for(s in samples)
+{
+  data<-add_data(data,ts,s)
+}
+
+p<-ggplot() + geom_logo(data) + theme_logo()+
+  facet_wrap(~seq_group, ncol=3)+scale_x_continuous(breaks=c(1,5,10,15))+xlab("position [nt]")
+#theme(axis.title.x=element_blank(),axis.ticks.x=)
+
+infile<-paste0("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/06.2-U-bias-family/graph/BS_",active_smtype,"_",active_strand,".pdf")  
+plot(p)
+pdf(file=infile,width=8,height=10)
+plot(p)
+dev.off()
+```
+
+## piRNA - antisense
+
+
+```{r}
+### Set the variables
+active_strand<-"anse"
+active_smtype<-"piRNA"
+ts<-subset(t,smtype==active_smtype & strand==active_strand)
+
+data=list()
+for(s in samples)
+{
+  data<-add_data(data,ts,s)
+}
+
+p<-ggplot() + geom_logo(data) + theme_logo()+
+  facet_wrap(~seq_group, ncol=3)+ scale_x_continuous(breaks=c(1,5,10,15,20,25,29))+xlab("position [nt]")
+#theme(axis.title.x=element_blank(),axis.ticks.x=)
+
+infile<-paste0("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/06.2-U-bias-family/graph/BS_",active_smtype,"_",active_strand,".pdf")  
+plot(p)
+pdf(file=infile,width=8,height=10)
+plot(p)
+dev.off()
+```
+
+## siRNA - sense
+
+
+```{r}
+### Set the variables
+active_strand<-"se"
+active_smtype<-"siRNA"
+ts<-subset(t,smtype==active_smtype & strand==active_strand)
+
+data=list()
+for(s in samples)
+{
+  data<-add_data(data,ts,s)
+}
+
+p<-ggplot() + geom_logo(data) + theme_logo()+
+  facet_wrap(~seq_group, ncol=3)+ scale_x_continuous(breaks=c(1,5,10,15,20,25,29))+xlab("position [nt]")
+#theme(axis.title.x=element_blank(),axis.ticks.x=)
+
+infile<-paste0("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/06.2-U-bias-family/graph/BS_",active_smtype,"_",active_strand,".pdf")  
+plot(p)
+pdf(file=infile,width=8,height=10)
+plot(p)
+dev.off()
+```
+
+## siRNA - antisense
+
+
+```{r}
+### Set the variables
+active_strand<-"anse"
+active_smtype<-"siRNA"
+ts<-subset(t,smtype==active_smtype & strand==active_strand)
+
+data=list()
+for(s in samples)
+{
+  data<-add_data(data,ts,s)
+}
+
+p<-ggplot() + geom_logo(data) + theme_logo()+
+  facet_wrap(~seq_group, ncol=3)+ scale_x_continuous(breaks=c(1,5,10,15,20,25,29))+xlab("position [nt]")
+#theme(axis.title.x=element_blank(),axis.ticks.x=)
+
+infile<-paste0("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/06.2-U-bias-family/graph/BS_",active_smtype,"_",active_strand,".pdf")  
+plot(p)
+pdf(file=infile,width=8,height=10)
+plot(p)
+dev.off()
+```
+
+## Main figure - generation 30
+
+```{R}
+library(ggplot2)
+library(ggseqlogo)
+library(tidyverse)
+
+
+
+infile<-"/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/06.2-U-bias-family/raw-BS/bs-forr.txt"
+t<-read.table(infile)
+names(t)<-c("sid","te","smtype","strand","quatsch","coverage","order","matrix")
+t<-subset(t,te=="BS" & smtype=="piRNA" & sid %in% c("R1-G30","R2-G30","R4-G30"))
+
+t$matrix<-as.character(t$matrix)
+
+
+           
+
+add_data <- function(li,t,target_sid,target_strand)
+{
+  key<-paste0(target_sid,"_",target_strand)
+  suse<-subset(t,sid==target_sid & strand==target_strand)
+  susev<-str_split(suse$matrix, ",", n = Inf, simplify = FALSE)
+    susen<-as.numeric(susev[[1]])
+    susem<-matrix(susen,nrow=4,byrow = F)
+    rownames(susem)<-c("A","C","U","G")
+    li[[key]]<-susem[,1:15]
+    return(li)
+  
+}
+
+
+data=list()
+data<-add_data(data,t,"R1-G30","se")
+data<-add_data(data,t,"R2-G30","se")
+data<-add_data(data,t,"R4-G30","se")
+data<-add_data(data,t,"R1-G30","anse")
+data<-add_data(data,t,"R2-G30","anse")
+data<-add_data(data,t,"R4-G30","anse")
+
+
+p<-ggplot() + geom_logo(data) + theme_logo()+
+  facet_wrap(~seq_group, ncol=3)+ scale_x_continuous(breaks=c(1,5,10,15,20,25,29))
+#theme(axis.title.x=element_blank(),axis.ticks.x=)
+
+plot(p)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/06.2-U-bias-family/graph/bs_main_g30.pdf",width=7,height=4)
+plot(p)
+dev.off()
+```
+
+
+## Main figure - generation 35
+
+```{R}
+library(ggplot2)
+library(ggseqlogo)
+library(tidyverse)
+
+
+
+infile<-"/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/06.2-U-bias-family/raw-BS/bs-forr.txt"
+t<-read.table(infile)
+names(t)<-c("sid","te","smtype","strand","quatsch","coverage","order","matrix")
+t<-subset(t,te=="BS" & smtype=="piRNA" & sid %in% c("R1-G35","R2-G35","R4-G35"))
+
+t$matrix<-as.character(t$matrix)
+
+
+           
+
+add_data <- function(li,t,target_sid,target_strand)
+{
+  key<-paste0(target_sid,"_",target_strand)
+  suse<-subset(t,sid==target_sid & strand==target_strand)
+  susev<-str_split(suse$matrix, ",", n = Inf, simplify = FALSE)
+    susen<-as.numeric(susev[[1]])
+    susem<-matrix(susen,nrow=4,byrow = F)
+    rownames(susem)<-c("A","C","U","G")
+    li[[key]]<-susem[,1:15]
+    return(li)
+  
+}
+
+
+data=list()
+data<-add_data(data,t,"R1-G35","se")
+data<-add_data(data,t,"R2-G35","se")
+data<-add_data(data,t,"R4-G35","se")
+data<-add_data(data,t,"R1-G35","anse")
+data<-add_data(data,t,"R2-G35","anse")
+data<-add_data(data,t,"R4-G35","anse")
+
+
+p<-ggplot() + geom_logo(data) + theme_logo()+
+  facet_wrap(~seq_group, ncol=3)+ scale_x_continuous(breaks=c(1,5,10,15,20,25,29))
+#theme(axis.title.x=element_blank(),axis.ticks.x=)
+
+plot(p)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/06.2-U-bias-family/graph/bs_main_g35.pdf",width=7,height=4)
+plot(p)
+dev.off()
+```

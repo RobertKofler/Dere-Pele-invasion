@@ -1,0 +1,67 @@
+---
+title: "04-coverage"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# genome length
+
+
+
+```{bash eval=FALSE}
+fasta-reader.py dere_longread.fasta|awk '{print $1,$2,length($3)}'|awk '{l+=$3}END{print l}'
+135657613
+```
+
+
+# Find best coverage approach; test sample -R2 G18 r1 
+## nanoplot
+```{bash eval=FALSE}
+NanoPlot --bam Derecta_R2_G18_r1.sort.bam     
+# 7288188562/135657613
+# 53.72488
+```
+## command line
+
+```{bash eval=FALSE}
+samtools view -F 0x04 Derecta_R2_G18_r1.sort.bam|awk '{le+=length($10)}END{print le/135657613}'
+# 57.4583
+```
+Alternative approach with paf
+```{bash eval=FALSE}
+cat Derecta_R2_G18_r1.paf|awk '$12>10'|awk '{le+=$11}END{print le/135657613}'
+# 53.2311 jackpot very close to minimap coverage
+```
+
+# compute coverage for all pafs
+```{bash eval=FALSE}
+for i in *paf; do echo $i; cat $i |awk '$12>10'|awk '{le+=$11}END{print le/135657613}'; done | paste - -
+Derecta_R1_G20_r1.paf	90.5001
+Derecta_R2_G18_r1.paf	53.2311
+Derecta_R2_G21_r1.paf	58.4554
+Derecta_R2_G21_r2.paf	31.7775
+Derecta_R2_G21_r3.paf	12.1006
+Derecta_R2_G26_r1.paf	28.8423
+Derecta_R2_G51_r1.paf	12.3891
+Derecta_R2_G51_r2.paf	127.2
+Derecta_R4_G25_r1.paf	63.7323
+Derecta_R4_G51_r1.paf	70.8967
+```
+
+# number of reads supportint a cluster insertion
+```{bash eval=FALSE}
+for i in *cli; do echo $i; cat $i |awk '$10>0'|wc ;done| paste - -
+Derecta_R1_G20_r1.cli	      33     345    1929
+Derecta_R2_G18_r1.cli	      25     263    1475
+Derecta_R2_G21_r1.cli	      99    1087    6383
+Derecta_R2_G21_r2.cli	      62     680    3996
+Derecta_R2_G21_r3.cli	      73     799    4706
+Derecta_R2_G26_r1.cli	     157    1725   10159
+Derecta_R2_G51_r1.cli	     524    5776   34139
+Derecta_R2_G51_r2.cli	    5795   63871  377378
+Derecta_R4_G25_r1.cli	      30     322    1842
+Derecta_R4_G51_r1.cli	      88     945    5436
+```

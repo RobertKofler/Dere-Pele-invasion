@@ -1,0 +1,130 @@
+---
+title: "Virus-mapping"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Virus-file
+
+Download from
+https://obbard.bio.ed.ac.uk/index.html
+
+https://obbard.bio.ed.ac.uk/data/Updated_Drosophila_Viruses.fas.gz
+
+Date:13.June.2022
+
+## remove nonsense lines
+there is lots of shit inside
+```{bash eval=FALSE}
+CATCATATTTATTTTATTCTTTGAGCATGCCAGTTGGCTCTCAAATCGAATATAATTATT
+TCCATAGTAATATAGTAAGCTATAATAGTTACAATCTACAAGGAAAGTTCAATACAATAA
+TGGTCAACGCTAGACGTCGCAGTCGTTCCAGATCC
+>------------------van_Mierlo_(2014)_PloS_Path------------------
+
+>KF242511.1_Drosophila_immigrans_Nora_virus
+CTAGGCACCTGGGCGGGGGTTAATGAGCACTGGAAATAAGAAACGCGAGACAACGCTTTG
+CTGATTACGTATAAGTGGAGTATCGGGGAGTAAAATCCTGCTGATTACGGTTATATGGAG
+```
+
+we removed it with (removes the extra lines and empty lines)
+```{bash eval=FALSE}
+cat Updated_Drosophila_Viruses_13June22.fas|grep -v ">__"| grep -v ">--"|perl -ne 'print unless /^\s*$/' >Obbard_clean_13June22.fasta
+```
+
+omg there we even some spaces in fasta headers (Drosophila suzuki) that I replaced by _
+
+no residual space left checked by
+```{bash eval=FALSE}
+cat Obbard_clean_13June22.fasta|awk '{print $2}'|perl -ne 'print unless /^\s*$/'
+```
+
+since there is still crap left and fasta names may be too large we wrote a script
+```{bash eval=FALSE}
+python Obbard-cleaner.py --fasta Obbard_clean_13June22.fasta --hashout Obbard-hash.txt > Obbard_clean_clean_13June22.fasta
+```
+# Mapping small RNAs
+
+```{bash eval=FALSE}
+ref="/Volumes/Temp/Robert/2022-divya-ere/02-small-RNA-virus/ref/Obbard_clean_clean_13June22.nvi"
+of="/Volumes/Temp/Robert/2022-divya-ere/02-small-RNA-virus/map"
+if="/Volumes/Temp/Robert/2022-divya-ere/02-small-RNA-virus/raw"
+
+
+for i in $if/*; do tmp=`basename $i`;n=${tmp%.fastq}; novoalign -d $ref -f $i -F STDFQ -o SAM -o FullNW -r RANDOM | samtools view -Sb - | samtools sort - -o $of/$n.sort.bam -m 4G; done
+
+
+#novoalign -d $ref -f $it/g62-r11-nucs15-35.fastq -F STDFQ -o SAM -o FullNW -r RANDOM | samtools view -Sb - | samtools sort - -o $of/r11-g62.dsim_jj.nucs15-35.bam -m 4G
+```
+
+# Mapping statistics
+
+```{bash eval=FALSE}
+samtools view dere_R1G30.sort.bam|awk '{print $3}' |uniq -c|sort -k1,1n
+```
+
+## mapping statistics for all
+```{bash eval=FALSE}
+if="/Volumes/Temp/Robert/2022-divya-ere/02-small-RNA-virus/map"
+of="/Volumes/Temp/Robert/2022-divya-ere/02-small-RNA-virus/res"
+
+
+for i in $if/*.sort.bam; do tmp=`basename $i`;n=${tmp%.sort.bam}; samtools view $i | awk '{print $3}' | uniq -c|sort -k1,1nr > $of/$n.res; done
+```
+
+## the results
+```{bash eval=FALSE}
+[0,7300]rokofler%python ~/dev/te-tools/ere/expression/viral-expression.py .
+*	337	382	525	417	287	300	27	453	122
+./dere_R4G5.res	999757.52	80.64	0.55	28.03	20.77	33.16	3.60	6.71	4.22	2.28
+./dere_R1G15.res	999750.97	98.14	5.66	7.85	18.12	29.05	8.66	10.52	6.15	4.45
+./dere_ovaries_R1G35.res	999730.36	100.27	13.27	0.52	42.62	5.16	10.00	16.67	22.29	18.37
+./dere_R4G25.res	999604.63	122.56	2.01	63.14	17.36	12.99	38.46	11.12	8.68	7.82
+./dere_R4G30.res	999771.23	69.05	4.89	26.32	20.34	14.35	13.39	9.33	8.82	7.14
+./dere_ovaries_R4G10.res	999365.00	293.01	9.49	1.87	12.36	21.99	7.08	17.18	4.21	3.41
+./dere_R2G45.res	999802.08	61.52	2.22	29.83	20.25	14.59	6.60	8.23	7.59	5.49
+./dere_R4G20.res	999653.95	59.82	3.31	78.04	20.55	12.18	39.44	10.11	10.69	10.36
+./dere_naive_ovaries_R3.res	999814.62	25.75	2.97	0.26	44.51	3.05	9.16	17.02	29.59	25.75
+./dere_naive_ovaries_R2.res	999802.47	48.22	13.69	0.58	32.37	3.40	7.68	15.93	23.61	24.76
+./dere_R2G5.res	999757.97	42.10	2.03	47.43	20.94	32.12	5.93	4.95	6.23	5.33
+./dere_R2G40.res	999668.43	178.61	0.46	44.73	19.22	16.77	4.57	13.72	6.83	5.77
+./dere_naive_ovaries_R1.res	999794.11	29.87	4.43	0.39	42.47	5.21	13.46	18.36	32.05	26.21
+./dere_ovaries_R2G10.res	999109.03	639.87	11.87	0.42	16.87	60.95	5.68	34.42	7.21	3.65
+./dere_R2G30.res	999723.27	123.75	3.99	26.39	18.81	25.24	8.80	10.22	4.60	3.25
+./dere_R4G45.res	999687.69	97.99	4.30	44.64	19.24	13.18	27.61	12.90	10.18	10.81
+./dere_R2G25.res	999435.86	347.03	2.96	64.39	19.17	16.48	13.52	23.62	8.48	6.39
+./dere_naive_WF_R2.res	999814.19	50.12	1.22	24.52	25.45	10.51	7.65	10.58	12.58	11.08
+./dere_R1G5.res	999478.47	127.44	26.34	47.65	17.72	76.28	25.12	14.66	6.49	5.88
+./dere_naive_WF_R3.res	999628.70	155.05	10.30	47.30	22.66	25.04	12.47	16.20	15.75	13.21
+./dere_naive_WF_R1.res	999740.68	41.89	2.40	92.69	22.27	10.11	14.48	9.51	11.39	9.08
+./dere_R4G40.res	999756.50	40.57	0.64	89.58	25.75	10.99	8.80	7.59	13.05	9.08
+./dere_R2G20.res	999652.58	136.03	3.81	54.22	17.19	14.34	17.73	13.45	7.07	5.91
+./dere_R1G40.res	999824.82	24.91	0.21	55.41	25.74	9.72	6.65	5.95	9.65	7.42
+./dere_ovaries_R1G1.res	999650.52	53.32	171.63	1.01	15.15	7.98	9.44	17.72	12.83	12.62
+./dere_R1G45.res	999817.98	29.93	2.45	57.12	14.75	12.23	7.55	8.49	8.13	5.47
+./dere_R2G15.res	999769.83	75.24	6.41	5.64	16.40	27.67	12.55	6.58	5.98	3.67
+./dere_ovaries_R2G35.res	999716.78	103.95	17.88	1.21	36.97	5.76	10.76	14.24	21.06	14.70
+./dere_R1G20.res	999664.61	125.65	0.47	95.27	17.87	11.42	8.55	10.10	5.83	4.43
+./dere_ovaries_R2G1.res	999540.11	39.71	245.37	0.52	15.16	7.11	11.20	19.77	15.63	17.20
+./dere_R1G25.res	999619.68	111.64	2.41	69.14	17.56	17.08	37.78	9.70	10.27	6.90
+./dere_ovaries_R4G35.res	999735.22	62.97	40.51	1.05	42.86	2.55	13.75	15.85	22.26	16.00
+./dere_R4G15.res	999567.41	187.66	16.69	10.56	12.90	34.68	22.18	15.24	4.44	4.27
+./dere_ovaries_R1G10.res	999849.89	19.99	9.67	0.96	23.10	18.68	3.89	5.82	6.65	5.56
+./dere_R1G30.res	999685.88	48.59	18.16	41.72	14.56	10.80	35.88	9.11	7.04	8.89
+./dere_ovaries_R4G1.res	999233.66	68.07	575.14	0.00	14.54	6.18	11.01	16.84	12.60	10.36
+```
+
+## Is a virus more highly expressed in Rep2?
+```{R}
+h<-read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/09-virus/raw-forr/raw.txt",delim="\t",col_names=FALSE,comment="#")
+names(h)<-c("replicate","generation","tissue","vi1","vi2","vi3","vi4","vi5")
+rep2<-subset(h,replicate=="R2")
+rep14<-subset(h,replicate!="R2")
+wilcox.test(rep2$vi1,rep14$vi1)
+wilcox.test(rep2$vi2,rep14$vi2)
+wilcox.test(rep2$vi3,rep14$vi3)
+wilcox.test(rep2$vi4,rep14$vi4)
+wilcox.test(rep2$vi5,rep14$vi5)
+```

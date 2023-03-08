@@ -1,0 +1,137 @@
+---
+title: "Effect of normalization"
+output: html_notebook
+---
+
+
+# Processing
+
+## Normalization to 1mil miRNA
+
+```{bash eval=FALSE}
+ 4582  samtools view ../raw-bam/dere_naive_ovaries_R1_trim_clean_sf_sorted.bam| python2.7 ~/dev/te-tools/piRNA/tmp/stat-familyevolution.py --sam - --rep 1 --gen 0 --max-mm 2 --cond ovary > norm-mirna/naive-ovary-r1 &
+ 4583  samtools view ../raw-bam/dere_naive_ovaries_R2_trim_clean_sf_sorted.bam| python2.7 ~/dev/te-tools/piRNA/tmp/stat-familyevolution.py --sam - --rep 2 --gen 0 --max-mm 2 --cond ovary > norm-mirna/naive-ovary-r2 &
+ 4585  samtools view ../raw-bam/dere_naive_ovaries_R3_trim_clean_sf_sorted.bam| python2.7 ~/dev/te-tools/piRNA/tmp/stat-familyevolution.py --sam - --rep 3 --gen 0 --max-mm 2 --cond ovary > norm-mirna/naive-ovary-r3 &
+ 4586  samtools view ../raw-bam/dere_naive_WF_R1_trim_clean_sf_sorted.bam| python2.7 ~/dev/te-tools/piRNA/tmp/stat-familyevolution.py --sam - --rep 1 --gen 0 --max-mm 2 --cond wholebody > norm-mirna/naive-wholebody-r1 &
+ 4587  samtools view ../raw-bam/dere_naive_WF_R2_trim_clean_sf_sorted.bam| python2.7 ~/dev/te-tools/piRNA/tmp/stat-familyevolution.py --sam - --rep 2 --gen 0 --max-mm 2 --cond wholebody > norm-mirna/naive-wholebody-r2 &
+ 4588  samtools view ../raw-bam/dere_naive_WF_R3_trim_clean_sf_sorted.bam| python2.7 ~/dev/te-tools/piRNA/tmp/stat-familyevolution.py --sam - --rep 3 --gen 0 --max-mm 2 --cond wholebody > norm-mirna/naive-wholebody-r3 &
+ cat n* > naive-mirna-normalize.forr
+```
+
+## Normaliatzon to 1mil piRNA
+
+piRNAs map to a TE (ending _te) and have a size between 23 and 29nt
+```{bash eval=FALSE}
+ 4569  samtools view dere_naive_ovaries_R1_trim_clean_sf_sorted.bam | python2.7 ~/dev/te-tools/divya/stat-familyevolution.py --sam - --rep 1 --gen 0 --max-mm 2 --cond ovary > ../02-naive/naive-ovary-R1 &
+ 4570  samtools view dere_naive_ovaries_R2_trim_clean_sf_sorted.bam | python2.7 ~/dev/te-tools/divya/stat-familyevolution.py --sam - --rep 2 --gen 0 --max-mm 2 --cond ovary > ../02-naive/naive-ovary-R2 &
+ 4571  samtools view dere_naive_ovaries_R3_trim_clean_sf_sorted.bam | python2.7 ~/dev/te-tools/divya/stat-familyevolution.py --sam - --rep 3 --gen 0 --max-mm 2 --cond ovary > ../02-naive/naive-ovary-R3 &
+ 4572  samtools view dere_naive_WF_R1_trim_clean_sf_sorted.bam | python2.7 ~/dev/te-tools/divya/stat-familyevolution.py --sam - --rep 1 --gen 0 --max-mm 2 --cond wholebody > ../02-naive/naive-wholebody-R1 &
+ 4573  samtools view dere_naive_WF_R2_trim_clean_sf_sorted.bam | python2.7 ~/dev/te-tools/divya/stat-familyevolution.py --sam - --rep 2 --gen 0 --max-mm 2 --cond wholebody > ../02-naive/naive-wholebody-R2 &
+ 4574  samtools view dere_naive_WF_R3_trim_clean_sf_sorted.bam | python2.7 ~/dev/te-tools/divya/stat-familyevolution.py --sam - --rep 3 --gen 0 --max-mm 2 --cond wholebody > ../02-naive/naive-wholebody-R3 &
+cat n* > naive-normalized-pirna.r
+```
+
+# Visualize
+## Normalize to 1 mil piRNA
+
+```{r}
+library(tidyverse)
+library(RColorBrewer)
+theme_set(theme_bw())
+tresrep<-c("#e41a1c","#377eb8","#4daf4a")
+
+t=read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/02-naive/norm-pirna/naive-normalized-pirna.r",delim="\t",col_names=FALSE,comment="#")
+names(t)<-c("tissue","replicate","generation","te","length","count","normcount")
+
+
+
+# oary	1	0	1360	3409	294	309.594589045
+# ovary	1	0	412	7567	26957	28386.8752955
+# ovary	1	0	ACCORD	7404	0	0.0
+# ovary	1	0	AF222049	5249	96	101.092110708
+
+
+t$te<-as.factor(t$te)
+t$tissue<-as.factor(t$tissue)
+tgr <- t %>% group_by(te,tissue) %>% dplyr::summarise(mean=mean(normcount),sd=sd(normcount))
+test<-tgr %>% pivot_wider(id_cols=te,names_from = tissue,values_from=c(mean,sd))
+test$color="black"
+test[test$te=="PPI251",]$color="red"
+
+
+
+test$xmin<- test$mean_ovary-test$sd_ovary
+test$xmax<- test$mean_ovary+test$sd_ovary
+test$ymin<- test$mean_wholebody-test$sd_wholebody
+test$ymax<- test$mean_wholebody+test$sd_wholebody
+p <- ggplot(data = test,aes(x = mean_ovary,y = mean_wholebody,color=color)) + 
+  geom_point() + geom_errorbar(aes(ymin = ymin,ymax = ymax)) + 
+  scale_color_manual(values=c("black","red"))+
+  geom_errorbar(aes(xmin = xmin,xmax = xmax))+scale_x_log10()+scale_y_log10()+
+  geom_abline(slope=1,intercept=0,linetype="dashed")+theme(legend.position = "none")
+
+
+
+
+#s<-ggplot()+geom_line(data=t,aes(x=generation,y=count,color=replicate),size=1)+
+#  geom_point(data=t,aes(x=generation,y=count,shape=tissue,color=replicate),size=3)+
+#  theme(strip.text=element_blank(),legend.position=c(0.2,0.9))+
+
+
+plot(p)
+postscript(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/02-naive/graph/naive-norm-pirna",width=4,height=4)
+plot(p)
+dev.off()
+```
+
+## Normalize to a million miRNA
+
+```{r}
+library(tidyverse)
+library(RColorBrewer)
+theme_set(theme_bw())
+tresrep<-c("#e41a1c","#377eb8","#4daf4a")
+
+
+t=read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/02-naive/norm-mirna/naive-mirna-normalize.forr",delim="\t",col_names=FALSE,comment="#")
+names(t)<-c("tissue","replicate","generation","te","length","count","normcount","pirnanorm")
+
+# oary	1	0	1360	3409	294	309.594589045
+# ovary	1	0	412	7567	26957	28386.8752955
+# ovary	1	0	ACCORD	7404	0	0.0
+# ovary	1	0	AF222049	5249	96	101.092110708
+
+
+t$te<-as.factor(t$te)
+t$tissue<-as.factor(t$tissue)
+tgr <- t %>% group_by(te,tissue) %>% dplyr::summarise(mean=mean(normcount),sd=sd(normcount))
+test<-tgr %>% pivot_wider(id_cols=te,names_from = tissue,values_from=c(mean,sd))
+test$color="black"
+test[test$te=="PPI251",]$color="red"
+
+
+
+test$xmin<- test$mean_ovary-test$sd_ovary
+test$xmax<- test$mean_ovary+test$sd_ovary
+test$ymin<- test$mean_wholebody-test$sd_wholebody
+test$ymax<- test$mean_wholebody+test$sd_wholebody
+p <- ggplot(data = test,aes(x = mean_ovary,y = mean_wholebody,color=color)) + 
+  geom_point() + geom_errorbar(aes(ymin = ymin,ymax = ymax)) + 
+  scale_color_manual(values=c("black","red"))+
+  geom_errorbar(aes(xmin = xmin,xmax = xmax))+scale_x_log10()+scale_y_log10()+
+  geom_abline(slope=1,intercept=0,linetype="dashed")+theme(legend.position = "none")
+
+
+
+
+#s<-ggplot()+geom_line(data=t,aes(x=generation,y=count,color=replicate),size=1)+
+#  geom_point(data=t,aes(x=generation,y=count,shape=tissue,color=replicate),size=3)+
+#  theme(strip.text=element_blank(),legend.position=c(0.2,0.9))+
+
+
+plot(p)
+postscript(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/02-naive/graph/naive-norm-mirna",width=4,height=4)
+plot(p)
+dev.off()
+```
+

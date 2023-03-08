@@ -1,0 +1,91 @@
+---
+title: "Preprocess the small RNAs"
+output: html_notebook
+---
+# Rename
+```{bash eval=FALSE}
+#-----03_dere-------
+mv dere_200325_NB501473_A_L1-4_AMLZ-23_R1.fastq.gz dere_ovaries_R1G1.fastq.gz
+mv dere_200325_NB501473_A_L1-4_AMLZ-24_R1.fastq.gz dere_ovaries_R2G1.fastq.gz
+mv dere_200325_NB501473_A_L1-4_AMLZ-25_R1.fastq.gz dere_ovaries_R4G1.fastq.gz
+mv dere_200325_NB501473_A_L1-4_AMLZ-26_R1.fastq.gz dere_ovaries_R1G35.fastq.gz
+mv dere_200325_NB501473_A_L1-4_AMLZ-27_R1.fastq.gz dere_ovaries_R2G35.fastq.gz
+mv dere_200325_NB501473_A_L1-4_AMLZ-28_R1.fastq.gz dere_ovaries_R4G35.fastq.gz
+#-----03_dere-------
+
+
+#-----07_dere-------
+mv dere_200723_NB501850_A_L1-4_AMLZ-52_R1.fastq.gz dere_R1G5.fastq.gz
+mv dere_200723_NB501850_A_L1-4_AMLZ-53_R1.fastq.gz dere_R2G5.fastq.gz
+mv dere_200723_NB501850_A_L1-4_AMLZ-54_R1.fastq.gz dere_R4G5.fastq.gz
+mv dere_200723_NB501850_A_L1-4_AMLZ-55_R1.fastq.gz dere_ovaries_R1G10.fastq.gz
+mv dere_200723_NB501850_A_L1-4_AMLZ-56_R1.fastq.gz dere_ovaries_R2G10.fastq.gz
+mv dere_200723_NB501850_A_L1-4_AMLZ-58_R1.fastq.gz dere_R1G15.fastq.gz
+mv dere_200723_NB501850_A_L1-4_AMLZ-60_R1.fastq.gz dere_R4G15.fastq.gz
+mv dere_200723_NB501850_A_L1-4_AMLZ-69_R1.fastq.gz dere_R2G15.fastq.gz
+mv dere_200723_NB501850_A_L1-4_AMLZ-68_R1.fastq.gz dere_ovaries_R4G10.fastq.gz
+#-----07_dere-------
+
+
+#-----12_dere-------
+mv dere_AMLZ-77.fastq.gz dere_R1G20.fastq.gz
+mv dere_AMLZ-78.fastq.gz dere_R2G20.fastq.gz
+mv dere_AMLZ-79.fastq.gz dere_R4G20.fastq.gz
+mv dere_AMLZ-80.fastq.gz dere_R1G25.fastq.gz
+mv dere_AMLZ-81.fastq.gz dere_R2G25.fastq.gz
+mv dere_AMLZ-82.fastq.gz dere_R4G25.fastq.gz
+mv dere_AMLZ-84.fastq.gz dere_R2G30.fastq.gz
+mv dere_AMLZ-85.fastq.gz dere_R4G30.fastq.gz
+mv dere_AMLZ-86.fastq.gz dere_R1G40.fastq.gz
+mv dere_AMLZ-87.fastq.gz dere_R2G40.fastq.gz
+mv dere_AMLZ-88.fastq.gz dere_R4G40.fastq.gz
+mv dere_AMLZ-89.fastq.gz dere_R1G45.fastq.gz
+mv dere_AMLZ-90.fastq.gz dere_R2G45.fastq.gz
+mv dere_AMLZ-91.fastq.gz dere_R4G45.fastq.gz
+mv dere_AMLZ-92.fastq.gz dere_naive_ovaries_R1.fastq.gz
+mv dere_AMLZ-93.fastq.gz dere_naive_ovaries_R2.fastq.gz
+mv dere_AMLZ-94.fastq.gz dere_naive_ovaries_R3.fastq.gz
+mv dere_AMLZ-95.fastq.gz dere_naive_WF_R1.fastq.gz
+mv dere_AMLZ-96.fastq.gz dere_naive_WF_R2.fastq.gz
+mv dere_AMLZ-97.fastq.gz dere_naive_WF_R3.fastq.gz
+mv dere_AMLZ-119.fastq.gz dere_R1G30.fastq.gz
+```
+
+# Trimming (Divya)
+```{bash eval=FALSE}
+for i in data/dere/**/*.fastq.gz;
+        do
+                date
+                j=`basename $i`
+                j=${j%.fastq.gz}
+                cutadapt -j 10 -a TGGAATTCTCGGGTGCCAAGG -o Results/dere/dere_$j.fastq.gz $i
+                date 
+        done
+```
+# Size filtering
+
+```{bash eval=FALSE}
+# clean read name
+for i in *.fastq.gz; do j=${i%.fastq.gz}; gzip -cd $i | awk '{print$1}' | gzip -c > $j.clean.tar.gz; done &
+# filter for read length 18-35
+for i in *.clean.tar.gz; do j=`basename $i`; j=${j%.clean.tar.gz}; gzip -cd $i| paste - - - -|awk 'length($2) >17 && length($2) <36'|tr "\t" "\n" > sf/$j.sizefiltered.fastq; done &
+```
+
+
+# Mapping (Divya)
+```{bash eval=FALSE}
+#!/usr/bash/bin
+#script: script used to produce mapped BAM files using novoalign command
+
+for i in Results/dere/sf/*
+        do
+                date
+                j=`basename $i`
+                j=${j%.sizefiltered.fastq}
+                j=${j%.sizefiltered}
+                novoalign -d ref_resource/ere/dere_te_allRNA.nvi -f $i -F STDFQ -o SAM -o FullNW -r RANDOM | samtools view -@ 8 -Sb - | samtools sort -o  Results/dere/sorted/${j}_trim_clean_sf_sorted.bam
+                date
+        done
+```
+
+

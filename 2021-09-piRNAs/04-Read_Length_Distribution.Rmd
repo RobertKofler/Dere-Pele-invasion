@@ -1,0 +1,235 @@
+---
+title: "R Notebook - Read length distribution"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Preprocess
+## Normalize to a million piRNAs
+
+```{bash eval=FALSE}
+source ~/.zshrc 
+script="/Users/rokofler/dev/te-tools/divya/graph-length-distribution-milpi.py"
+inf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/raw-bam"
+ouf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/raw"
+
+
+# Rep 1
+samtools view $inf/dere_ovaries_R1G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G1 > $ouf/R1-G1.txt
+samtools view $inf/dere_R1G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G5 > $ouf/R1-G5.txt
+samtools view $inf/dere_ovaries_R1G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G10 > $ouf/R1-G10.txt
+samtools view $inf/dere_R1G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G15 > $ouf/R1-G15.txt
+samtools view $inf/dere_R1G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G20 > $ouf/R1-G20.txt
+samtools view $inf/dere_R1G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G25 > $ouf/R1-G25.txt
+samtools view $inf/dere_R1G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G30 > $ouf/R1-G30.txt
+samtools view $inf/dere_ovaries_R1G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G35 > $ouf/R1-G35.txt
+samtools view $inf/dere_R1G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G40 > $ouf/R1-G40.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G45 > $ouf/R1-G45.txt
+
+# Rep 2
+samtools view $inf/dere_ovaries_R2G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G1 > $ouf/R2-G1.txt
+samtools view $inf/dere_R2G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G5 > $ouf/R2-G5.txt
+samtools view $inf/dere_ovaries_R2G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G10 > $ouf/R2-G10.txt
+samtools view $inf/dere_R2G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G15 > $ouf/R2-G15.txt
+samtools view $inf/dere_R2G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G20 > $ouf/R2-G20.txt
+samtools view $inf/dere_R2G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G25 > $ouf/R2-G25.txt
+samtools view $inf/dere_R2G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G30 > $ouf/R2-G30.txt
+samtools view $inf/dere_ovaries_R2G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G35 > $ouf/R2-G35.txt
+samtools view $inf/dere_R2G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G40 > $ouf/R2-G40.txt
+samtools view $inf/dere_R2G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G45 > $ouf/R2-G45.txt
+
+
+# Rep 4
+samtools view $inf/dere_ovaries_R4G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G1 > $ouf/R4-G1.txt
+samtools view $inf/dere_R4G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G5 > $ouf/R4-G5.txt
+samtools view $inf/dere_ovaries_R4G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G10 > $ouf/R4-G10.txt
+samtools view $inf/dere_R4G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G15 > $ouf/R4-G15.txt
+samtools view $inf/dere_R4G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G20 > $ouf/R4-G20.txt
+samtools view $inf/dere_R4G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G25 > $ouf/R4-G25.txt
+samtools view $inf/dere_R4G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G30 > $ouf/R4-G30.txt
+samtools view $inf/dere_ovaries_R4G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G35 > $ouf/R4-G35.txt
+samtools view $inf/dere_R4G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G40 > $ouf/R4-G40.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G45 > $ouf/R4-G45.txt
+
+cat R* |perl -pe 's/-/\t/'|perl -pe 's/G//' > readleng-pele-normmilpirna.forr
+```
+
+## Normalize to the total number of reads mapping to the P-element, TEs or miRNAs
+
+```{bash eval=FALSE}
+source ~/.zshrc 
+script="/Users/rokofler/dev/te-tools/divya/graph-length-distribution.py"
+inf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/raw-bam"
+ouf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/raw-totnorm"
+
+# Rep 1
+samtools view $inf/dere_ovaries_R1G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G1 > $ouf/R1-G1-tn.txt
+samtools view $inf/dere_R1G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G5 > $ouf/R1-G5-tn.txt
+samtools view $inf/dere_ovaries_R1G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G10 > $ouf/R1-G10-tn.txt
+samtools view $inf/dere_R1G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G15 > $ouf/R1-G15-tn.txt
+samtools view $inf/dere_R1G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G20 > $ouf/R1-G20-tn.txt
+samtools view $inf/dere_R1G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G25 > $ouf/R1-G25-tn.txt
+samtools view $inf/dere_R1G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G30 > $ouf/R1-G30-tn.txt
+samtools view $inf/dere_ovaries_R1G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G35 > $ouf/R1-G35-tn.txt
+samtools view $inf/dere_R1G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G40 > $ouf/R1-G40-tn.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G45 > $ouf/R1-G45-tn.txt
+
+
+# Rep 2
+samtools view $inf/dere_ovaries_R2G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G1 > $ouf/R2-G1-tn.txt
+samtools view $inf/dere_R2G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G5 > $ouf/R2-G5-tn.txt
+samtools view $inf/dere_ovaries_R2G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G10 > $ouf/R2-G10-tn.txt
+samtools view $inf/dere_R2G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G15 > $ouf/R2-G15-tn.txt
+samtools view $inf/dere_R2G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G20 > $ouf/R2-G20-tn.txt
+samtools view $inf/dere_R2G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G25 > $ouf/R2-G25-tn.txt
+samtools view $inf/dere_R2G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G30 > $ouf/R2-G30-tn.txt
+samtools view $inf/dere_ovaries_R2G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G35 > $ouf/R2-G35-tn.txt
+samtools view $inf/dere_R2G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G40 > $ouf/R2-G40-tn.txt
+samtools view $inf/dere_R2G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G45 > $ouf/R2-G45-tn.txt
+
+
+# Rep 4
+samtools view $inf/dere_ovaries_R4G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G1 > $ouf/R4-G1-tn.txt
+samtools view $inf/dere_R4G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G5 > $ouf/R4-G5-tn.txt
+samtools view $inf/dere_ovaries_R4G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G10 > $ouf/R4-G10-tn.txt
+samtools view $inf/dere_R4G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G15 > $ouf/R4-G15-tn.txt
+samtools view $inf/dere_R4G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G20 > $ouf/R4-G20-tn.txt
+samtools view $inf/dere_R4G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G25 > $ouf/R4-G25-tn.txt
+samtools view $inf/dere_R4G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G30 > $ouf/R4-G30-tn.txt
+samtools view $inf/dere_ovaries_R4G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G35 > $ouf/R4-G35-tn.txt
+samtools view $inf/dere_R4G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G40 > $ouf/R4-G40-tn.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G45 > $ouf/R4-G45-tn.txt
+cat R* |perl -pe 's/-/\t/'|perl -pe 's/G//' > readleng-pele-norm100pc.forr
+```
+
+## Normalize naive data
+
+```{bash eval=FALSE}
+source ~/.zshrc 
+script="/Users/rokofler/dev/te-tools/divya/graph-length-distribution.py"
+inf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/raw-bam"
+ouf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/raw-totnorm"
+
+# Rep 1
+samtools view $inf/dere_naive_WF_R1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G0.01 > $ouf/R1-G0wf-tn.txt
+samtools view $inf/dere_naive_WF_R2_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G0.01 > $ouf/R2-G0wf-tn.txt
+samtools view $inf/dere_naive_WF_R3_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G0.01 > $ouf/R4-G0wf-tn.txt
+
+samtools view $inf/dere_naive_ovaries_R1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G0.02 > $ouf/R1-G0ov-tn.txt
+samtools view $inf/dere_naive_ovaries_R2_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G0.02 > $ouf/R2-G0ov-tn.txt
+samtools view $inf/dere_naive_ovaries_R3_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G0.02 > $ouf/R4-G0ov-tn.txt
+
+# NOTE: whole flies (wf) = 0.01
+# and ovaries = 0.02
+```
+# Visualize the data
+
+## normalized to a million piRNAs
+
+```{r eval=TRUE}
+library(ggplot2)
+library(gridExtra)
+library(tidyverse)
+
+theme_set(theme_bw())
+c<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/raw/readleng-pele-normmilpirna.forr")
+
+
+names(c)<-c("replicate","generation","feature","strand","strandfeature","length","count","ncount")
+c$replicate<-as.factor(c$replicate)
+c$generation<-as.factor(c$generation)
+
+gc<-ggplot(c,aes(x=length,y=ncount,group=strandfeature,fill=strand))+
+geom_bar(stat="identity",position="identity")+
+facet_grid(generation~replicate)+ylab("abundance of small RNAs complementary to the P-element [smRNA/mil.piRNA]")+theme(legend.position="none")+xlim(18.5,29.5)+
+scale_y_continuous(breaks=c(-10000,0,10000))
+
+
+
+plot(gc)
+postscript(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/graph/lendistri-normmilpirna.ps",width=8,height=10)
+plot(gc)
+dev.off()
+
+```
+
+## Visualize to 100 pc of all reads - all generations including naive
+
+```{R}
+library(ggplot2)
+library(gridExtra)
+
+theme_set(theme_bw())
+#c<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/raw-totnorm/readleng-pele-norm100pc.forr")
+c<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/raw-totnorm/readleng-pele-norm100pc-incnaive.forr")
+
+
+names(c)<-c("replicate","generation","feature","strand","strandfeature","length","count","ncount")
+c<-subset(c,feature=="P")
+c$replicate<-as.factor(c$replicate)
+c$generation<-as.factor(c$generation)
+siRNAs<-subset(c,length>=20 & length <=22)
+piRNAs<-subset(c,length>=23 & length <=29)
+sRNAs<-subset(c,length>=20 & length <=29)
+siRNAs<-siRNAs %>%group_by(generation,replicate)%>% dplyr::summarise(count=sum(count))
+piRNAs<-piRNAs %>%group_by(generation,replicate)%>% dplyr::summarise(count=sum(count))
+sRNAs<-sRNAs %>%group_by(generation,replicate)%>% dplyr::summarise(count=sum(count))
+
+
+gc<-ggplot()+
+geom_bar(data=c,aes(x=length,y=ncount,group=strandfeature,fill=strand),stat="identity",position="identity")+
+  #geom_text(data=sRNAs,aes(x=26,y=40,label=paste0("sum = ",count)),size=2.5,hjust=0,vjust=0)+
+  geom_text(data=siRNAs,aes(x=26,y=60,label=paste0("siRNA = ",count)),size=2.5,hjust=0,vjust=0)+
+  geom_text(data=piRNAs,aes(x=26,y=30,label=paste0("piRNA = ",count)),size=2.5,hjust=0,vjust=0)+
+facet_grid(generation~replicate)+ylab("fraction of small RNAs complementary to the P-element [%]")+theme(legend.position="none")+xlim(18.5,29.5)#+
+#scale_y_continuous(breaks=c(-10000,0,10000))
+
+
+
+plot(gc)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/graph/lendistri-norm100pc-incnaive2.pdf",width=8,height=10)
+plot(gc)
+dev.off()
+```
+
+## Visualize to 100 pc of all reads - generation 1-45 main focus
+
+```{R}
+library(ggplot2)
+library(gridExtra)
+
+theme_set(theme_bw())
+#c<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/raw-totnorm/readleng-pele-norm100pc.forr")
+c<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/raw-totnorm/readleng-pele-norm100pc-incnaive.forr")
+
+
+names(c)<-c("replicate","generation","feature","strand","strandfeature","length","count","ncount")
+c<-subset(c,feature=="P")
+c$replicate<-as.factor(c$replicate)
+c$generation<-as.factor(c$generation)
+siRNAs<-subset(c,length>=20 & length <=22)
+piRNAs<-subset(c,length>=23 & length <=29)
+sRNAs<-subset(c,length>=20 & length <=29)
+siRNAs<-siRNAs %>%group_by(generation,replicate)%>% dplyr::summarise(count=sum(count))
+piRNAs<-piRNAs %>%group_by(generation,replicate)%>% dplyr::summarise(count=sum(count))
+sRNAs<-sRNAs %>%group_by(generation,replicate)%>% dplyr::summarise(count=sum(count))
+c[c$generation ==0.01,]$ncount<-1
+c[c$generation ==0.02,]$ncount<-1
+
+
+gc<-ggplot()+
+geom_bar(data=c,aes(x=length,y=ncount,group=strandfeature,fill=strand),stat="identity",position="identity")+
+  #geom_text(data=sRNAs,aes(x=26,y=40,label=paste0("sum = ",count)),size=2.5,hjust=0,vjust=0)+
+  geom_text(data=siRNAs,aes(x=26,y=40,label=paste0("siRNA = ",count)),size=2.5,hjust=0,vjust=0)+
+  geom_text(data=piRNAs,aes(x=26,y=25,label=paste0("piRNA = ",count)),size=2.5,hjust=0,vjust=0)+
+facet_grid(generation~replicate)+ylab("fraction of small RNAs complementary to the P-element [%]")+theme(legend.position="none")+xlim(18.5,29.5)#+
+#scale_y_continuous(breaks=c(-10000,0,10000))
+
+
+
+plot(gc)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/04-readlength/graph/lendistri-norm100pc-incnaive-no100.pdf",width=8,height=10)
+plot(gc)
+dev.off()
+```

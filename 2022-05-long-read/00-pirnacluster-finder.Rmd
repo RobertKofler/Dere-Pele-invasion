@@ -1,0 +1,165 @@
+---
+title: "piRNA-cluster-finder"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Find piRNA -cluster
+## miRNA count in samples
+```{bash eval=FALSE}
+dere_naive_ovaries_R1_trim_clean_sf_sorted.bam	gen	mirnacount	3028122	2
+dere_naive_ovaries_R2_trim_clean_sf_sorted.bam	gen	mirnacount	2548753	2
+dere_naive_ovaries_R3_trim_clean_sf_sorted.bam	gen	mirnacount	2445386	2
+
+sum_naive_ovaries: 8022261
+
+dere_naive_WF_R1_trim_clean_sf_sorted.bam	gen	mirnacount	3347757	24
+dere_naive_WF_R2_trim_clean_sf_sorted.bam	gen	mirnacount	4487287	32
+dere_naive_WF_R3_trim_clean_sf_sorted.bam	gen	mirnacount	10530803	44
+
+sum_naive_wholeflies: 18365847
+```
+
+## mapping naive ovaries
+
+here is the mapping command
+```{bash eval=FALSE}
+#!/usr/bash/bin
+#script: script used to produce mapped BAM files using novoalign command
+
+for i in Results/dere/sf/*
+        do
+                date
+                j=`basename $i`
+                j=${j%.sizefiltered.fastq}
+                j=${j%.sizefiltered}
+                novoalign -d ref_resource/ere/dere_te_allRNA.nvi -f $i -F STDFQ -o SAM -o FullNW -r RANDOM | samtools view -@ 8 -Sb - | samtools sort -o  Results/dere/sorted/${j}_trim_clean_sf_sorted.bam
+                date
+        done
+
+```
+
+resulting files
+```{bash eval=FALSE}
+-rw-r--r--  1 rokofler  staff  194822575 Dec 22 15:24 dere_naive_ovaries_R1_trim_clean_sf_sorted.bam
+-rw-r--r--  1 rokofler  staff  183978471 Dec 22 15:24 dere_naive_ovaries_R2_trim_clean_sf_sorted.bam
+-rw-r--r--  1 rokofler  staff  171100937 Dec 22 15:25 dere_naive_ovaries_R3_trim_clean_sf_sorted.bam
+samtools merge ovaries.sort.bam dere_naive_ovaries_R1_trim_clean_sf_sorted.bam dere_naive_ovaries_R2_trim_clean_sf_sorted.bam dere_naive_ovaries_R3_trim_clean_sf_sorted.bam
+```
+
+## bin reads for piRNA clusters
+```{bash eval=FALSE}
+
+# Note: this script solely considers small RNAs with a size between 23-29 for binning !
+# unambiguous since -min-mq 1
+samtools view raw-smallRNAmappings/ovaries.sort.bam|python ~/dev/te-tools/divya/bin-pirnas.py --min-mq 1 --sam - --binsize 500 --miRNA 8022261 > raw-pirnacluster/ere-ovaries-bin500-mq1.bin
+```
+
+### check histogram
+
+```{R}
+library(tidyverse)
+
+theme_set(theme_bw())
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-05-long-read/raw-pirnacluster/ere-ovaries-bin500-mq1.bin")
+whole<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-05-long-read/raw-pirnacluster/old-whole-flies/ere-cluster-bin500-mq1.txt")
+
+
+# contig_46	1000	1499	1	0.124653137064
+# contig_47	15500	15999	1	0.124653137064
+
+names(h)<-c("contig","start","end","rawcount","normcount")
+names(whole)<-c("contig","start","end","rawcount","normcount")
+
+# h is ovaries!
+# whole is whole flies (from Divya - see below)
+g<-ggplot(h, aes(x=rawcount)) + geom_histogram()+xlim(0,50)
+
+plot(g)
+# conclusion: lets go for a threshold of 10
+```
+
+## find piRNA clusters - FINAL CLUSTER FILE
+
+```{bash eval=FALSE}
+python ~/dev/te-tools/divya/localscore-pirnacluster.py --binsize 500 --bin ere-ovaries-bin500-mq1.bin --threshold 10 --sid dere > cluster-ovaries-ere.mq1.th10.bin500.txt
+
+# convert to BED -> final file with min.cluster size 500bp
+cat cluster-ovaries-ere.mq1.th10.bin500.txt | awk 'BEGIN{OFS="\t"}{print $2,$3,$4,$5}' > cluster-ovaries-ere.mq1.th10.bin500.bed
+
+# filter for minimum cluster size of 2000
+cat cluster-ovaries-ere.mq1.th10.bin500.bed|awk '$3-$2>1530' > cluster-ovaries-ere.ms2000.mq1.th10.bin500.bed
+```
+
+
+# Divya -  Find piRNA cluster in whole flies
+## map
+
+```{bash eval=FALSE}
+#!/usr/bash/bin
+
+
+for i in Results/dere/sf/*naive_WF*.fastq
+
+	do
+		date
+
+		j=`basename $i`
+		j=${j%.sizefiltered.fastq}
+		j=${j%.sizefiltered}
+
+ 
+		novoalign -d ref_resource/ere/dere_longread.nvi -f $i -F STDFQ -o SAM -o FullNW -r RANDOM | samtools view -@ 8 -Sb - | samtools sort -o  Results/dere/sorted_naive_WF/${j}_trim_clean_sf_sorted.bam
+	
+
+		date
+	done
+```
+
+## wrapper
+
+```{bash eval=FALSE}
+#!/usr/bash/bin
+
+date
+
+samtools view Results/dere/sorted_naive_WF/dere_naive_WF_clean_sf_sorted.bam | python /Volumes/Temp/Divya/piRNAs/Softwares/te-tools/divya/bin-pirnas.py --min-mq 1 --sam - --binsize 500 --miRNA 18365847 > Results/dere/sorted_naive_WF/ere-cluster-bin500-mq1.txt
+
+date
+
+(base) [0,10648]vetgrid08%cat readme_piRNA_cluster_erecta.txt                                                                  /Volumes/Temp/Divya/invasion_pelement/robert_invadepele_data/smallRNA/scripts
+
+
+#mapping WF flies against long read erecta genome
+
+nohup zsh scripts/novoalign_ere_naive.sh >novoalign_ere_naive.log &
+
+# counting miRNAs from naive_WF
+
+for i in *naive_WF*; do grep "mirnacount" $i >> naive_WF_mirnacount.txt ; done
+less naive_WF_mirnacount.txt | cut -f4 | paste -s -d+ -| bc ==> 18365847
+
+#binning
+
+nohup zsh scripts/binning_piRNA.sh > binning_piRNA.log & 
+
+#localscore
+
+nohup zsh scripts/localscore_piRNA.sh > localscore_piRNA.log &
+# looking into localscore give
+python /Volumes/Temp/Divya/piRNAs/Softwares/te-tools/divya/localscore-pirnacluster.py --bin Results/dere/sorted_naive_WF/ere-cluster-bin500-mq1.txt --threshold 10 --sid dere --binsize 500 --max-bin-score 100 > Results/dere/sorted_naive_WF/cluster-all-ere.mq1.th10.bin500.txt
+
+#merging pairup
+
+for i in *.txt;do awk -F, '{print FILENAME , $0}' $i |sed 's/\_trimmed\.txt//g' | cut -b12- | sed 's/G/ G/g' >> dere_pairup_all.txt; done
+
+less dere_pairup_all.txt |tr '\t' ',' |tr ' ' ',' | tr ',' '\t' > dere_pairup_all_final.txt
+
+less dere_pairup_all_final.txt| awk '{print $0,-0.1}' > dere_pairup_all_final_v2.txt
+
+#find clusterinsertions
+
+nohup zsh scripts/findclusterinsertions.sh > findclusterinsertions_v2.log &
+```

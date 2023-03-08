@@ -1,0 +1,116 @@
+---
+title: "Line plots of siRNA and piRNA abundance"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Preprocess - get the data into a tractable format
+
+
+```{bash eval=FALSE}
+script="/Users/rokofler/dev/te-tools/ere/smallRNA-lineplot.py"
+inf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/raw-bam"
+ouf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/01-lineplot/raw"
+
+# Rep 1
+samtools view $inf/dere_ovaries_R1G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G1 > $ouf/R1-G1.txt
+samtools view $inf/dere_R1G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G5 > $ouf/R1-G5.txt
+samtools view $inf/dere_ovaries_R1G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G10 > $ouf/R1-G10.txt
+samtools view $inf/dere_R1G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G15 > $ouf/R1-G15.txt
+samtools view $inf/dere_R1G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G20 > $ouf/R1-G20.txt
+samtools view $inf/dere_R1G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G25 > $ouf/R1-G25.txt
+samtools view $inf/dere_R1G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G30 > $ouf/R1-G30.txt
+samtools view $inf/dere_ovaries_R1G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G35 > $ouf/R1-G35.txt
+samtools view $inf/dere_R1G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G40 > $ouf/R1-G40.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G45 > $ouf/R1-G45.txt
+
+# Rep 2
+samtools view $inf/dere_ovaries_R2G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G1 > $ouf/R2-G1.txt
+samtools view $inf/dere_R2G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G5 > $ouf/R2-G5.txt
+samtools view $inf/dere_ovaries_R2G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G10 > $ouf/R2-G10.txt
+samtools view $inf/dere_R2G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G15 > $ouf/R2-G15.txt
+samtools view $inf/dere_R2G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G20 > $ouf/R2-G20.txt
+samtools view $inf/dere_R2G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G25 > $ouf/R2-G25.txt
+samtools view $inf/dere_R2G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G30 > $ouf/R2-G30.txt
+samtools view $inf/dere_ovaries_R2G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G35 > $ouf/R2-G35.txt
+samtools view $inf/dere_R2G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G40 > $ouf/R2-G40.txt
+samtools view $inf/dere_R2G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G45 > $ouf/R2-G45.txt
+
+# Rep 4
+samtools view $inf/dere_ovaries_R4G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G1 > $ouf/R4-G1.txt
+samtools view $inf/dere_R4G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G5 > $ouf/R4-G5.txt
+samtools view $inf/dere_ovaries_R4G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G10 > $ouf/R4-G10.txt
+samtools view $inf/dere_R4G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G15 > $ouf/R4-G15.txt
+samtools view $inf/dere_R4G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G20 > $ouf/R4-G20.txt
+samtools view $inf/dere_R4G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G25 > $ouf/R4-G25.txt
+samtools view $inf/dere_R4G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G30 > $ouf/R4-G30.txt
+samtools view $inf/dere_ovaries_R4G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G35 > $ouf/R4-G35.txt
+samtools view $inf/dere_R4G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G40 > $ouf/R4-G40.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G45 > $ouf/R4-G45.txt
+
+cat R* |perl -pe 's/-/\t/'|perl -pe 's/G//' > line-forr.txt
+```
+
+# Visualize
+
+## piRNAs
+```{R}
+library(tidyverse)
+library(RColorBrewer)
+#library(plyr)
+theme_set(theme_bw())
+tresrep<-c("#e41a1c","#377eb8","#4daf4a")
+
+t=read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/01-lineplot/data/pi_abudan.txt",delim="\t",col_names=FALSE,comment="#")
+names(t)<-c("replicate","generation","tissue","count")
+t$replicate<-as.factor(t$replicate)
+t$tissue<-revalue(t$tissue, c("b"="whole bodies", "o"="ovaries"))
+
+s<-ggplot()+geom_line(data=t,aes(x=generation,y=count,color=replicate),size=1)+
+  geom_point(data=t,aes(x=generation,y=count,shape=tissue,color=replicate),size=3)+
+  theme(strip.text=element_blank(),legend.position=c(0.2,0.8))+
+#  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
+  ylab("P-element piRNAs [ppm]")+scale_colour_manual(values=tresrep)+xlim(1,48)
+
+plot(s)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/01-lineplot/graphs/just-pirnas.pdf",width=6.2,height=3)
+plot(s)
+dev.off()
+
+```
+
+## piRNAs and siRNAs
+
+```{R}
+library(tidyverse)
+library(RColorBrewer)
+library(plyr)
+theme_set(theme_bw())
+tresrep<-c("#e41a1c","#377eb8","#4daf4a")
+
+t=read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/01-lineplot/raw/line-forr.txt",delim="\t",col_names=FALSE,comment="#")
+names(t)<-c("replicate","generation","te","smallRNA","count")
+t$tissue<-"whole bodies"
+t[t$generation==1 | t$generation==10 |t$generation==35,]$tissue<-"ovary"
+t$replicate<-as.factor(t$replicate)
+#t<-subset(t,smallRNA=="piRNA")
+ymax<-max(t$count)
+
+s<-ggplot()+geom_line(data=t,aes(x=generation,y=count,color=replicate,linetype=smallRNA),size=1)+
+  geom_point(data=t,aes(x=generation,y=count,color=replicate),size=2)+ # shape=tissue
+  scale_linetype_manual(breaks=c("siRNA","piRNA"), values=c(1,2))+
+  geom_vline(xintercept = 1, linetype="dotted", color = "black", size=0.5)+
+  geom_vline(xintercept = 10, linetype="dotted", color = "black", size=0.5)+
+  geom_vline(xintercept = 35, linetype="dotted", color = "black", size=0.5)+
+  theme(strip.text=element_blank(),legend.position=c(0.2,0.7))+
+#  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
+  ylab("P-element small RNAs [ppm]")+scale_colour_manual(values=tresrep)+xlim(1,48)
+
+plot(s)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/01-lineplot/graphs/pi-sirnas.pdf",width=6.2,height=3)
+plot(s)
+dev.off()
+```

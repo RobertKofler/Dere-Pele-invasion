@@ -1,0 +1,279 @@
+---
+title: "PopTE2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+
+Running of PopTE2
+
+## all Divya commands
+```{bash eval=FALSE}
+nohup zsh scripts/map_popte2.sh fastq/ere/trimmed results/dere/popte2_map_3 references/genomes/dere_longread_popte2.fasta >map_popte2_3.log &
+nohup zsh scripts/ppileup.sh results/dere/popte2_map_3/ results/dere/popte2_map_3/ppileup > ppileup_3.log &
+nohup zsh scripts/stat_cov.sh results/dere/popte2_map_3/ppileup results/dere/popte2_map_3/stat_coverage > stat_coverage_3.log &
+nohup zsh scripts/stat_reads.sh results/dere/popte2_map_3 results/dere/popte2_map_3/stat_reads > stat_reads_3.log &
+nohup zsh scripts/update_strand.sh results/dere/popte2_map_3/identify_signatures results/dere/popte2_map_3/update_strand results/dere/popte2_map_3 > update_strand_3.log &
+nohup zsh scripts/frequencies.sh results/dere/popte2_map_3/update_strand results/dere/popte2_map_3/frequency >frequencies_3.log &
+nohup zsh scripts/frequencies.sh results/dere/popte2_map_3/update_strand results/dere/popte2_map_3/frequency results/dere/popte2_map_3/ppileup >frequencies_3.log &
+nohup zsh scripts/filter_sig.sh results/dere/popte2_map_3/frequency results/dere/popte2_map_3/filter_signatures > filter_signatures_3.log &
+nohup zsh scripts/pairup.sh results/dere/popte2_map_3/filter_signatures results/dere/popte2_map_3/pairup references/genomes/dere_longread_popte2.fasta > pairup_3.log &
+```
+## map popte2
+```{bash eval=FALSE}
+#!/bin/zsh
+
+# read parameters
+if [ $# -lt 3 ]
+  # "$#" is number of parameters- here we test
+   then
+   echo "Usage $0 inputdir outdir refg"
+exit 2
+fi
+
+set -o shwordsplit
+
+source ~/.zshrc
+
+# Files and folders
+inputdir=$1
+refg=$3
+outdir=$2
+
+samtools="/Volumes/Temp/Divya/Nanopore/Softwares/anaconda/bin/samtools"
+bwa="/usr/local/bin/bwa"
+threads=24
+popte2="/Volumes/Temp/Divya/programs/popte2-v1.10.04.jar"
+
+
+## the REFERENCE 
+#refg="references/all_dros_species/dere_r105_popte2.fasta"
+
+mkdir -p $outdir
+
+bwa index $refg
+
+# paths
+for read1 in $inputdir/*_1.fq.gz
+do
+	# variables defined to store the ids of the files from the input directory
+        
+	read2=${read1%_1.fq.gz}
+	read2=${read2}_2.fq.gz
+	tmp=`basename $read1`
+        readid=${tmp%_1.fq.gz}
+        
+	# mapping
+	$bwa bwasw -t $threads $refg $read1 |samtools view -Sb - > $outdir/${readid}_1.bam
+	$bwa bwasw -t $threads $refg $read2 |samtools view -Sb - > $outdir/${readid}_2.bam
+	java -jar $popte2 se2pe --fastq1 $read1 --fastq2 $read2 --bam1  $outdir/${readid}_1.bam --bam2 $outdir/${readid}_2.bam --sort --output $outdir/$readid.sort.bam
+done 
+```
+
+## resulting bam
+
+```{bash eval=FALSE}
+-rw-r--r--   1 vetgrid08  staff  1666808513 Jun 23  2021 ACAGTG_ere_R1G10_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1803988115 Jun 23  2021 ACTTGA_ere_R1G20_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1506191178 Jun 23  2021 CACTCA_ere_R1G34_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  2007852911 Jun 23  2021 CACTCA_ere_R1G40_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1505495593 Jun 23  2021 CACTCA_ere_R1G48_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1591307964 Jun 23  2021 CAGATC_ere_R4G10_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  2062281829 Jun 23  2021 CAGGCG_ere_R2G34_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1797865120 Jun 23  2021 CAGGCG_ere_R2G40_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1696144435 Jun 23  2021 CAGGCG_ere_R2G48_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1574145860 Jun 23  2021 CATGGC_ere_R4G34_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1600642030 Jun 23  2021 CATGGC_ere_R4G40_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1287302716 Jun 23  2021 CATGGC_ere_R4G48_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1374474183 Jun 23  2021 CATTTT_ere_naive_r1_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff   959774180 Jun 23  2021 CATTTT_ere_naive_r2_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1831904658 Jun 23  2021 CGATGT_ere_R1G1_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1671306009 Jun 23  2021 CTTGTA_ere_R4G20_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1682904468 Jun 23  2021 GCCAAT_ere_R2G10_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1711501377 Jun 23  2021 GGCTAC_ere_R2G20_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  1735361583 Jun 23  2021 TGACCA_ere_R4G1_trimmed.sort.bam
+-rw-r--r--   1 vetgrid08  staff  2023021272 Jun 23  2021 TTAGGC_ere_R2G1_trimmed.sort.bam
+```
+
+## ppileup 
+```{bash eval=FALSE}
+#!/usr/bin/bash
+if [ $# -ne 2 ]
+  # "$#" is number of parameters- here we test
+  # whether it is not equal to two
+   then
+   echo "Usage $0 infolder outfolder"
+exit 2
+fi
+
+infolder=$1
+outfolder=$2
+
+# paths
+for i in $infolder/*.bam
+do
+	date
+        n=`basename $i`
+	n=${n%.sort.bam}
+        java -jar ../programs/popte2-v1.10.04.jar ppileup --bam $i --map-qual 15 --hier references/pelement.hier  --output $outfolder/$n.ppileup.gz
+	date
+done
+```
+
+## signature
+```{bash eval=FALSE}
+#!/usr/bin/bash
+
+
+if [ $# -ne 2 ]
+  # "$#" is number of parameters- here we test
+  # whether it is not equal to two
+   then
+   echo "Usage $0 infolder outfolder"
+exit 2
+fi
+
+infolder=$1
+outfolder=$2
+
+# paths
+for i in $infolder/*.ppileup.gz
+do
+	date
+        n=`basename $i`
+	n=${n%.ppileup.gz}
+# 	java  -jar ../programs/popte2-v1.10.04.jar identifySignatures --ppileup $i  --mode separate --min-count 2 --signature-window fix100 --min-valley fix100 --output $outfolder/$n.signatures first attempt
+#	java  -jar ../programs/popte2-v1.10.04.jar identifySignatures --ppileup $i  --mode separate --min-count 1  --output $outfolder/$n.signatures
+	java  -jar ../programs/popte2-v1.10.04.jar identifySignatures --ppileup $i  --mode separate --min-count 1 --signature-window fix100 --output $outfolder/$n.signatures
+	date
+done
+```
+
+## update strand
+```{bash eval=FALSE}
+#!/usr/bin/bash
+
+
+if [ $# -ne 3 ]
+  # "$#" is number of parameters- here we test
+  # whether it is not equal to two
+   then
+   echo "Usage $0 infolder outfolder bamfolder"
+exit 2
+fi
+
+infolder=$1
+outfolder=$2
+bamfolder=$3
+
+# paths
+for i in $infolder/*.signatures
+do
+	date
+        n=`basename $i`
+	n=${n%.signatures}
+	java  -jar ../programs/popte2-v1.10.04.jar updateStrand --signature $i  --output $outfolder/$n.signatures  --bam $bamfolder/$n.sort.bam --hier references/pelement.hier --map-qual 15 --max-disagreement 0.4
+	date
+done
+```
+
+## get frequencies
+
+```{bash eval=FALSE}
+#!/usr/bin/bash
+
+
+if [ $# -ne 3 ]
+  # "$#" is number of parameters- here we test
+  # whether it is not equal to two
+   then
+   echo "Usage $0 infolder outfolder ppileup"
+exit 2
+fi
+
+
+
+infolder=$1
+outfolder=$2
+ppileup=$3
+
+# paths
+for i in $infolder/*.signatures
+do
+	date
+        n=`basename $i`
+	n=${n%.signatures}
+	java  -jar ../programs/popte2-v1.10.04.jar frequency --ppileup  $ppileup/$n.ppileup.gz --signature $i --output $outfolder/$n.freqsignatures
+	date
+done
+```
+
+## filter signatures - Robert
+For this filtering reliable frequency estimates are important - hence a min-coverage of 10 is used.
+Note that for piRNA cluster insertions this may not be the case. Use a different filtering here (eg min-coverage 1 or NO min-coverage)
+
+```{bash eval=FALSE}
+#!/usr/bin/bash
+
+
+if [ $# -ne 2 ]
+  # "$#" is number of parameters- here we test
+  # whether it is not equal to two
+   then
+   echo "Usage $0 infolder outfolder"
+exit 2
+fi
+
+
+
+infolder=$1
+outfolder=$2
+
+
+# paths
+for i in $infolder/*.freqsignatures
+do
+	date
+        n=`basename $i`
+	n=${n%.freqsignatures}
+	java -Duser.language=US -Duser.country=US -Duser.variant=US  -jar popte2-v1.10.04.jar filterSignatures --min-count 1 --max-otherte-count 1 --min-coverage 10 --max-structvar-count 1 --input $i --output $outfolder/$n.signatures
+	date
+done
+```
+
+## pairup - Robert
+```{bash eval=FALSE}
+#!/usr/bin/bash
+
+
+if [ $# -ne 3 ]
+  # "$#" is number of parameters- here we test
+  # whether it is not equal to two
+   then
+   echo "Usage $0 infolder outfolder reference"
+exit 2
+fi
+
+
+
+infolder=$1
+outfolder=$2
+reference=$3
+
+# paths
+for i in $infolder/*.signatures
+do
+	date
+        n=`basename $i`
+	n=${n%.signatures}
+	java -Duser.language=US -Duser.country=US -Duser.variant=US  -jar popte2-v1.10.04.jar pairupSignatures --signature $i --ref-genome $reference  --hier refg/pelement.hier --output $outfolder/$n.txt
+	date
+done
+```
+
+
+

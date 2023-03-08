@@ -1,0 +1,112 @@
+---
+title: "Preprocess the small RNAs"
+output:
+  html_document:
+    df_print: paged
+---
+# Raw fastq files
+```{bash eval=FALSE}
+-rw-r--r--   1 vetgrid08  staff  619989271 Sep 28 18:40 R1_female_rep1_132_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  644806363 Sep 28 18:40 R1_female_rep2_133_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  722583404 Sep 28 18:40 R1_female_rep3_134_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  716898044 Sep 28 18:41 R1xR2_F1_rep1_138_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  643012204 Sep 28 18:41 R1xR2_F1_rep2_139_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  592825837 Sep 28 18:41 R1xR2_F1_rep3_140_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  730748376 Sep 28 18:41 R2_female_rep1_129_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  631604959 Sep 28 18:42 R2_female_rep1_144_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  741876009 Sep 28 18:42 R2_female_rep2_130_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  652682028 Sep 28 18:42 R2_female_rep2_145_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  624967450 Sep 28 18:42 R2_female_rep3_131_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  699152060 Sep 28 18:43 R2_female_rep3_146_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  760609079 Sep 28 18:43 R2xR1_F1_rep1_135_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  650662206 Sep 28 18:43 R2xR1_F1_rep2_136_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  732045245 Sep 28 18:43 R2xR1_F1_rep3_137_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  616454550 Sep 28 18:44 R2xR4_F1_rep1_150_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  638705868 Sep 28 18:44 R2xR4_F1_rep2_151_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  618300312 Sep 28 18:44 R2xR4_F1_rep3_152_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  652172118 Sep 28 18:44 R4_female_rep1_141_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  656576012 Sep 28 18:45 R4_female_rep2_142_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  741980735 Sep 28 18:45 R4_female_rep3_143_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  627810900 Sep 28 18:45 R4xR2_F1_rep1_147_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  672330154 Sep 28 18:45 R4xR2_F1_rep2_148_R1.fastq.gz
+-rw-r--r--   1 vetgrid08  staff  640226758 Sep 28 18:45 R4xR2_F1_rep3_149_R1.fastq.gz
+```
+# Rename
+```{bash eval=FALSE}
+
+```
+
+# Trimming (Divya)
+```{bash eval=FALSE}
+#!/usr/bin/bash
+for i in data/dere/09_22_dere/*.fastq.gz;
+	do
+		date
+		j=`basename $i`
+                j=${j%.fastq.gz}
+		cutadapt -j 10 -a AACTGTAGGCACCATCAAT -o Results/dere/crosses_dere/trimmed/${j}_trim.fastq.gz $i 
+		date 
+	done
+
+
+```
+# Size filtering
+
+```{bash eval=FALSE}
+#!/usr/bin/bash
+
+
+for i in Results/dere/crosses_dere/trimmed/*.fastq.gz;
+	do
+		date
+		j=`basename $i`
+                j=${j%.fastq.gz}
+		gzip -cd $i | cut -f 1 -d " " |  paste - - - - | awk 'length($2) >17 && length($2) <36'|tr "\t" "\n"  > Results/dere/crosses_dere/sf/${j}_sf.fastq
+		date 
+	done
+```
+
+
+# Mapping (Divya)
+```{bash eval=FALSE}
+#!/usr/bin/bash
+for i in Results/dere/crosses_dere/sf/*.fastq;
+	do
+		date
+		j=`basename $i`
+                j=${j%.fastq}
+		novoalign -d  ref_resource/ere/map_ref/dere_te_allRNA.nvi -f $i -F STDFQ -o SAM -o FullNW -r RANDOM | samtools view -@ 8 -Sb - | samtools sort -o  Results/dere/crosses_dere/sorted/${j}.sorted.bam
+		date 
+	done
+```
+
+# Rename (Robert)
+```{bash eval=FALSE}
+mv	R2_female_rep3_131_R1_trim_sf.sorted.bam	R2_rep3a_trim_sf.sorted.bam
+mv	R2_female_rep3_146_R1_trim_sf.sorted.bam	R2_rep3b_trim_sf.sorted.bam
+mv	R2_female_rep1_144_R1_trim_sf.sorted.bam	R2_rep1a_trim_sf.sorted.bam
+mv	R2_female_rep1_129_R1_trim_sf.sorted.bam	R2_rep1b_trim_sf.sorted.bam
+mv	R2_female_rep2_145_R1_trim_sf.sorted.bam	R2_rep2a_trim_sf.sorted.bam
+mv	R2_female_rep2_130_R1_trim_sf.sorted.bam	R2_rep2b_trim_sf.sorted.bam
+mv	R4_female_rep1_141_R1_trim_sf.sorted.bam	R4_rep1_trim_sf.sorted.bam
+mv	R1_female_rep2_133_R1_trim_sf.sorted.bam	R1_rep2_trim_sf.sorted.bam
+mv	R1_female_rep1_132_R1_trim_sf.sorted.bam	R1_rep1_trim_sf.sorted.bam
+mv	R4_female_rep2_142_R1_trim_sf.sorted.bam	R4_rep2_trim_sf.sorted.bam
+mv	R1_female_rep3_134_R1_trim_sf.sorted.bam	R1_rep3_trim_sf.sorted.bam
+mv	R4_female_rep3_143_R1_trim_sf.sorted.bam	R4_rep3_trim_sf.sorted.bam
+
+mv	R2xR4_F1_rep3_152_R1_trim_sf.sorted.bam	R2xR4_rep3_trim_sf.sorted.bam
+mv	R4xR2_F1_rep3_149_R1_trim_sf.sorted.bam	R4xR2_rep3_trim_sf.sorted.bam
+mv	R2xR1_F1_rep1_135_R1_trim_sf.sorted.bam	R2xR1_rep1_trim_sf.sorted.bam
+mv	R2xR1_F1_rep2_136_R1_trim_sf.sorted.bam	R2xR1_rep2_trim_sf.sorted.bam
+mv	R2xR1_F1_rep3_137_R1_trim_sf.sorted.bam	R2xR1_rep3_trim_sf.sorted.bam
+mv	R1xR2_F1_rep1_138_R1_trim_sf.sorted.bam	R1xR2_rep1_trim_sf.sorted.bam
+mv	R2xR4_F1_rep1_150_R1_trim_sf.sorted.bam	R2xR4_rep1_trim_sf.sorted.bam
+mv	R4xR2_F1_rep1_147_R1_trim_sf.sorted.bam	R4xR2_rep1_trim_sf.sorted.bam
+mv	R1xR2_F1_rep2_139_R1_trim_sf.sorted.bam	R1xR2_rep2_trim_sf.sorted.bam
+mv	R2xR4_F1_rep2_151_R1_trim_sf.sorted.bam	R2xR4_rep2_trim_sf.sorted.bam
+mv	R4xR2_F1_rep2_148_R1_trim_sf.sorted.bam	R4xR2_rep2_trim_sf.sorted.bam
+mv	R1xR2_F1_rep3_140_R1_trim_sf.sorted.bam	R1xR2_rep3_trim_sf.sorted.bam
+```
+
+

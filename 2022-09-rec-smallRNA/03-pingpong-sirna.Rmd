@@ -1,0 +1,136 @@
+---
+title: "Ping-pong of P-element and Quasimodo"
+output:
+  html_document:
+    df_print: paged
+---
+# Why??
+There are many siRNAs in R2. I was worried if they could be involved in ping-pong. 
+So I included siRNAs into the computation of the ping-pong signature. => No effect, still no ping-pong in R2
+
+# Raw fastq files
+```{bash eval=FALSE}
+source ~/.zshrc 
+script="/Users/rokofler/dev/te-tools/ere/ping-pong-signature.py"
+inf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-09-reci-smallRNA/raw/mapped"
+ouf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-09-reci-smallRNA/02-pp-si_pirna/raw"
+
+
+
+
+
+
+samtools view $inf/R1_rep1_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R1-rep1-a > $ouf/R1-rep1a.txt
+samtools view $inf/R1_rep2_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R1-rep2-a > $ouf/R1-rep2a.txt
+samtools view $inf/R1_rep3_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R1-rep3-a > $ouf/R1-rep3a.txt
+samtools view $inf/R2_rep1a_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2-rep1-a > $ouf/R2-rep1a.txt
+samtools view $inf/R2_rep2a_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2-rep2-a > $ouf/R2-rep2a.txt
+samtools view $inf/R2_rep3a_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2-rep3-a > $ouf/R2-rep3a.txt
+
+samtools view $inf/R2xR1_rep1_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2xR1-rep1-a > $ouf/R2xR1-rep1a.txt
+samtools view $inf/R2xR1_rep2_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2xR1-rep2-a > $ouf/R2xR1-rep2a.txt
+samtools view $inf/R2xR1_rep3_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2xR1-rep3-a > $ouf/R2xR1-rep3a.txt
+samtools view $inf/R1xR2_rep1_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R1xR2-rep1-a > $ouf/R1xR2-rep1a.txt
+samtools view $inf/R1xR2_rep2_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R1xR2-rep2-a > $ouf/R1xR2-rep2a.txt
+samtools view $inf/R1xR2_rep3_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R1xR2-rep3-a > $ouf/R1xR2-rep3a.txt
+
+
+samtools view $inf/R4_rep1_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R4-rep1-b > $ouf/R4-rep1b.txt
+samtools view $inf/R4_rep2_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R4-rep2-b > $ouf/R4-rep2b.txt
+samtools view $inf/R4_rep3_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R4-rep3-b > $ouf/R4-rep3b.txt
+samtools view $inf/R2_rep1b_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2-rep1-b > $ouf/R2-rep1b.txt
+samtools view $inf/R2_rep2b_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2-rep2-b > $ouf/R2-rep2b.txt
+samtools view $inf/R2_rep3b_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2-rep3-b > $ouf/R2-rep3b.txt
+
+samtools view $inf/R2xR4_rep1_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2xR4-rep1-b > $ouf/R2xR4-rep1b.txt
+samtools view $inf/R2xR4_rep2_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2xR4-rep2-b > $ouf/R2xR4-rep2b.txt
+samtools view $inf/R2xR4_rep3_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R2xR4-rep3-b > $ouf/R2xR4-rep3b.txt
+samtools view $inf/R4xR2_rep1_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R4xR2-rep1-b > $ouf/R4xR2-rep1b.txt
+samtools view $inf/R4xR2_rep2_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R4xR2-rep2-b > $ouf/R4xR2-rep2b.txt
+samtools view $inf/R4xR2_rep3_trim_sf.sorted.bam | python $script --min-len 21 --max-len 29 --sam - --sample-id R4xR2-rep3-b > $ouf/R4xR2-rep3b.txt
+```
+
+# Visualize R1
+
+## P-element
+```{R}
+library(tidyverse)
+theme_set(theme_bw())
+
+# R1	rep1	a	DMTOM1_LTR	as	1	0.0440162271805
+# R1	rep1	a	DMTOM1_LTR	as	2	0.0507099391481
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-09-reci-smallRNA/02-pp-si_pirna/raw/all.forr")
+names(h)<-c("cross","rep","group","fam","strand","pos","pps")
+h$rep<-as.factor(h$rep)
+levels(h$rep) <- c('1', '2', '3')
+h$cross <- factor(h$cross, levels=c("R1", "R2", "R1xR2", "R2xR1"))
+h<-subset(h,strand=="s" & fam=="PPI251" & group=="a")
+ 
+g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(rep~cross)+xlab("position")+
+  scale_y_continuous(breaks=c(0.0,0.2,0.4))+
+  ylab("ping-pong signature")
+plot(g)
+
+```
+
+## Quasimodo
+```{R}
+library(tidyverse)
+theme_set(theme_bw())
+
+# R1	rep1	a	DMTOM1_LTR	as	1	0.0440162271805
+# R1	rep1	a	DMTOM1_LTR	as	2	0.0507099391481
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-09-reci-smallRNA/02-pp-si_pirna/raw/all.forr")
+names(h)<-c("cross","rep","group","fam","strand","pos","pps")
+h$rep<-as.factor(h$rep)
+levels(h$rep) <- c('1', '2', '3')
+h<-subset(h,strand=="s" & fam=="QUASIMODO" & group=="a")
+ 
+g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(rep~cross)+xlab("position")+
+  scale_y_continuous(breaks=c(0.0,0.2,0.4))+
+  ylab("ping-pong signature")
+plot(g)
+```
+
+# Visualize R4
+
+## P-element
+```{R}
+library(tidyverse)
+theme_set(theme_bw())
+
+# R1	rep1	a	DMTOM1_LTR	as	1	0.0440162271805
+# R1	rep1	a	DMTOM1_LTR	as	2	0.0507099391481
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-09-reci-smallRNA/02-pp-si_pirna/raw/all.forr")
+names(h)<-c("cross","rep","group","fam","strand","pos","pps")
+h$rep<-as.factor(h$rep)
+levels(h$rep) <- c('1', '2', '3')
+h$cross <- factor(h$cross, levels=c("R4", "R2", "R4xR2", "R2xR4"))
+h<-subset(h,strand=="s" & fam=="PPI251" & group=="b")
+ 
+g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(rep~cross)+xlab("position")+
+  scale_y_continuous(breaks=c(0.0,0.2,0.4))+
+  ylab("ping-pong signature")
+plot(g)
+
+```
+
+## Quasimodo
+```{R}
+library(tidyverse)
+theme_set(theme_bw())
+
+
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-09-reci-smallRNA/02-pp-si_pirna/raw/all.forr")
+names(h)<-c("cross","rep","group","fam","strand","pos","pps")
+h$rep<-as.factor(h$rep)
+levels(h$rep) <- c('1', '2', '3')
+h$cross <- factor(h$cross, levels=c("R4", "R2", "R4xR2", "R2xR4"))
+h<-subset(h,strand=="s" & fam=="QUASIMODO" & group=="b")
+ 
+g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(rep~cross)+xlab("position")+
+  scale_y_continuous(breaks=c(0.0,0.2,0.4))+
+  ylab("ping-pong signature")
+plot(g)
+```
+

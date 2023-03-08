@@ -1,0 +1,111 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+# Preprocess data
+```{bash eval=FALSE}
+source ~/.zshrc 
+script="/Users/rokofler/dev/te-tools/ere/graph-pingpong-distribution-onPele.py"
+mi=23
+ma=29
+inf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/raw-bam"
+ouf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/10-ppsig/raw"
+
+#--pi-min $mi --pi-max $ma
+
+# Rep 1
+samtools view $inf/dere_ovaries_R1G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G1 > $ouf/R1-G1.txt
+samtools view $inf/dere_R1G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G5 > $ouf/R1-G5.txt
+samtools view $inf/dere_ovaries_R1G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G10 > $ouf/R1-G10.txt
+samtools view $inf/dere_R1G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G15 > $ouf/R1-G15.txt
+samtools view $inf/dere_R1G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G20 > $ouf/R1-G20.txt
+samtools view $inf/dere_R1G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G25 > $ouf/R1-G25.txt
+samtools view $inf/dere_R1G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G30 > $ouf/R1-G30.txt
+samtools view $inf/dere_ovaries_R1G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G35 > $ouf/R1-G35.txt
+samtools view $inf/dere_R1G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G40 > $ouf/R1-G40.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G45 > $ouf/R1-G45.txt
+
+# Rep 2
+samtools view $inf/dere_ovaries_R2G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G1 > $ouf/R2-G1.txt
+samtools view $inf/dere_R2G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G5 > $ouf/R2-G5.txt
+samtools view $inf/dere_ovaries_R2G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G10 > $ouf/R2-G10.txt
+samtools view $inf/dere_R2G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G15 > $ouf/R2-G15.txt
+samtools view $inf/dere_R2G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G20 > $ouf/R2-G20.txt
+samtools view $inf/dere_R2G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G25 > $ouf/R2-G25.txt
+samtools view $inf/dere_R2G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G30 > $ouf/R2-G30.txt
+samtools view $inf/dere_ovaries_R2G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G35 > $ouf/R2-G35.txt
+samtools view $inf/dere_R2G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G40 > $ouf/R2-G40.txt
+samtools view $inf/dere_R2G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G45 > $ouf/R2-G45.txt
+
+# Rep 4
+samtools view $inf/dere_ovaries_R4G1_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G1 > $ouf/R4-G1.txt
+samtools view $inf/dere_R4G5_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G5 > $ouf/R4-G5.txt
+samtools view $inf/dere_ovaries_R4G10_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G10 > $ouf/R4-G10.txt
+samtools view $inf/dere_R4G15_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G15 > $ouf/R4-G15.txt
+samtools view $inf/dere_R4G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G20 > $ouf/R4-G20.txt
+samtools view $inf/dere_R4G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G25 > $ouf/R4-G25.txt
+samtools view $inf/dere_R4G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G30 > $ouf/R4-G30.txt
+samtools view $inf/dere_ovaries_R4G35_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G35 > $ouf/R4-G35.txt
+samtools view $inf/dere_R4G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G40 > $ouf/R4-G40.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G45 > $ouf/R4-G45.txt
+
+# Summarize
+cat R* |perl -pe 's/-/\t/'|perl -pe 's/G//' > line-forr.txt
+```
+
+## visualize
+
+```{R}
+library(ggplot2)
+
+theme_set(theme_bw())
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/10-ppsig/raw/line-forr.txt")
+#R1	1	RT1C	1012	0.774674346272
+#R1	1	RT1C	826	1.54934869254
+#R1	1	RT1C	580	0.774674346272
+names(h)<-c("rep","time","sas","pos","pps")
+h$time<-as.factor(h$time)
+h[h$sas=="as",]$pps<- -h[h$sas=="as",]$pps
+
+ylow=min(h$pps)
+yhigh=max(h$pps)
+
+p<- ggplot(h,aes(x=pos,y=pps))+geom_segment(aes(xend=pos),yend=0)+facet_grid(time~rep)+ylim(ylow,yhigh)+ylab("ping-pong signature [%]")+xlab("position of piRNA (5' end)")+
+  #geom_rect(xmin = 827, xmax = 2375, ymin = ylow, ymax = yhigh,alpha=0.1)+
+  geom_vline(xintercept = 827,col="red")+geom_vline(xintercept = 2375,col="red")
+plot(p)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/10-ppsig/graphs/pps-distri-onpele.pdf",width=8,height=8)
+plot(p)
+dev.off()
+
+```
+### Sanity check - shift 10
+
+```{R}
+library(ggplot2)
+
+theme_set(theme_bw())
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/10-ppsig/raw10/line-forr.txt")
+#R1	1	RT1C	1012	0.774674346272
+#R1	1	RT1C	826	1.54934869254
+#R1	1	RT1C	580	0.774674346272
+names(h)<-c("rep","time","sas","pos","pps")
+h$time<-as.factor(h$time)
+h[h$sas=="as",]$pps<- -h[h$sas=="as",]$pps
+
+ylow=min(h$pps)
+yhigh=max(h$pps)
+
+p<- ggplot(h,aes(x=pos,y=pps))+geom_segment(aes(xend=pos),yend=0)+facet_grid(time~rep)+ylim(ylow,yhigh)+ylab("ping-pong signature [%]")+xlab("position of piRNA (5' end)")+
+  #geom_rect(xmin = 827, xmax = 2375, ymin = ylow, ymax = yhigh,alpha=0.1)+
+  geom_vline(xintercept = 827,col="red")+geom_vline(xintercept = 2375,col="red")
+plot(p)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/10-ppsig/graphs/sanity-shift10-pps-distri-onpele.pdf",width=8,height=8)
+plot(p)
+dev.off()
+
+```

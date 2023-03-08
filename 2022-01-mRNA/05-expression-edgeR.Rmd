@@ -1,0 +1,237 @@
+---
+title: "expression-mRNA-edgeR"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# preprocess data
+```{bash eval=FALSE}
+fai="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-mRNA/ref/dere_te_mRNA.fasta.fai"
+pyscript="/Users/rokofler/dev/te-tools/ere/expression/mRNA-expression.py"
+if="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-mRNA/map-bwamem"
+of="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-mRNA/03-all-expressionlevel/raw"
+
+# samtools view ovary_R1G10.sort.bam | python ~/dev/te-tools/ere/mRNA-expression.py --sam - --fai ../ref/dere_te_mRNA.fasta.fai --sample-id bla
+samtools view $if/ovary_R1G10.sort.bam | python $pyscript --sam - --sample-id R1-G10-ov --fai $fai > $of/expr_ovary_R1G10.txt
+samtools view $if/ovary_R1G35.sort.bam | python $pyscript --sam - --sample-id R1-G35-ov --fai $fai > $of/expr_ovary_R1G35.txt
+samtools view $if/ovary_R2G10.sort.bam | python $pyscript --sam - --sample-id R2-G10-ov --fai $fai > $of/expr_ovary_R2G10.txt
+samtools view $if/ovary_R2G35.sort.bam | python $pyscript --sam - --sample-id R2-G35-ov --fai $fai > $of/expr_ovary_R2G35.txt
+samtools view $if/ovary_R4G10.sort.bam | python $pyscript --sam - --sample-id R4-G10-ov --fai $fai > $of/expr_ovary_R4G10.txt
+samtools view $if/ovary_R4G35.sort.bam | python $pyscript --sam - --sample-id R4-G35-ov --fai $fai > $of/expr_ovary_R4G35.txt
+
+samtools view $if/wf_R1G5.sort.bam | python $pyscript --sam - --sample-id R1-G5-wf --fai $fai > $of/expr_wf_R1G5.txt
+samtools view $if/wf_R2G5.sort.bam | python $pyscript --sam - --sample-id R2-G5-wf --fai $fai > $of/expr_wf_R2G5.txt
+samtools view $if/wf_R4G5.sort.bam | python $pyscript --sam - --sample-id R4-G5-wf --fai $fai > $of/expr_wf_R4G5.txt
+
+samtools view $if/wf_R1G15.sort.bam | python $pyscript --sam - --sample-id R1-G15-wf --fai $fai > $of/expr_wf_R1G15.txt
+samtools view $if/wf_R2G15.sort.bam | python $pyscript --sam - --sample-id R2-G15-wf --fai $fai > $of/expr_wf_R2G15.txt
+samtools view $if/wf_R4G15.sort.bam | python $pyscript --sam - --sample-id R4-G15-wf --fai $fai > $of/expr_wf_R4G15.txt
+
+samtools view $if/wf_R1G20.sort.bam | python $pyscript --sam - --sample-id R1-G20-wf --fai $fai > $of/expr_wf_R1G20.txt
+samtools view $if/wf_R2G20.sort.bam | python $pyscript --sam - --sample-id R2-G20-wf --fai $fai > $of/expr_wf_R2G20.txt
+samtools view $if/wf_R4G20.sort.bam | python $pyscript --sam - --sample-id R4-G20-wf --fai $fai > $of/expr_wf_R4G20.txt
+
+samtools view $if/wf_R1G30.sort.bam | python $pyscript --sam - --sample-id R1-G30-wf --fai $fai > $of/expr_wf_R1G30.txt
+samtools view $if/wf_R2G30.sort.bam | python $pyscript --sam - --sample-id R2-G30-wf --fai $fai > $of/expr_wf_R2G30.txt
+samtools view $if/wf_R4G30.sort.bam | python $pyscript --sam - --sample-id R4-G30-wf --fai $fai > $of/expr_wf_R4G30.txt
+
+samtools view $if/wf_R1G40.sort.bam | python $pyscript --sam - --sample-id R1-G40-wf --fai $fai > $of/expr_wf_R1G40.txt
+samtools view $if/wf_R2G40.sort.bam | python $pyscript --sam - --sample-id R2-G40-wf --fai $fai > $of/expr_wf_R2G40.txt
+samtools view $if/wf_R4G40.sort.bam | python $pyscript --sam - --sample-id R4-G40-wf --fai $fai > $of/expr_wf_R4G40.txt
+
+samtools view $if/wf_naive1.sort.bam | python $pyscript --sam - --sample-id R1-naive-wf --fai $fai > $of/expr_wf_naive1.txt
+samtools view $if/wf_naive2.sort.bam | python $pyscript --sam - --sample-id R2-naive-wf --fai $fai > $of/expr_wf_naive2.txt
+samtools view $if/wf_naive3.sort.bam | python $pyscript --sam - --sample-id R4-naive-wf --fai $fai > $of/expr_wf_naive3.txt% 
+```
+
+Link to new folder
+```{bash eval=FALSE}
+ln 03-all-expressionlevel/raw/expression-forr.forr 07-expression-edgeR/raw
+```
+# output format
+```{bash eval=FALSE}
+[0,7055]rokofler%head 07-expression-edgeR/raw/expression-forr.forr
+R1	G10	ov	FBtr0144693_mRNA	1722.0	3.0	1467.0	23.9457596422	0.041717351293	23.9874769935
+R1	G10	ov	FBtr0133093_mRNA	3.0	0.0	285.0	0.214734576655	0.0	0.214734576655
+R1	G10	ov	FBtr0143069_mRNA	6509.0	3.0	1971.0	67.367934626	0.031049900734	67.3989845267
+R1	G10	ov	FBtr0136434_mRNA	4.0	0.0	1380.0	0.0591298109631	0.0	0.0591298109631
+R1	G10	ov	FBtr0131674_mRNA	3430.0	1.0	1752.0	39.9379348192	0.0116437127753	39.9495785319
+R1	G10	ov	FBtr0139052_mRNA	1203.0	0.0	234.0	104.875816637	0.0	104.875816637
+R1	G10	ov	FBtr0141161_mRNA	25.0	0.0	339.0	1.50440890725	0.0	1.50440890725
+R1	G10	ov	FBtr0141260_mRNA	3054.0	10.0	1830.0	34.0442309973	0.111474233783	34.1557052311
+R1	G10	ov	FBtr0135867_mRNA	647.0	1.0	486.0	27.1577381772	0.0419748658071	27.199713043
+R1	G10	ov	FBtr0144295_mRNA	38.0	0.0	846.0	0.916302389747	0.0	0.916302389747
+# col1 sid
+# col2 gen
+# col3 tissue
+# col4 gene (including TEs, that do not end with _mRNA)
+# col5 raw-count sense
+# col6 raw-count antisens
+# col7 gene-length
+# col8 rpkm sense
+# col9 rpkm antisense
+# col10 rpkm sense+antisense
+#names(d)<-c("replicate","generation","tissue","gene","rawse","rawase","genlen","se","ase","total")
+```
+# Use Edge-R and volcano plots
+```{R eval=FALSE}
+library(tidyverse)
+library(RColorBrewer)
+library(dplyr)
+library(edgeR)
+library(data.table)
+library(gridExtra)
+#library(gridExtra)
+# https://stackoverflow.com/questions/1249548/side-by-side-plots-with-ggplot2
+theme_set(theme_bw())
+palete <- c("darkgrey","orange","red")
+fuckit<-c("grey50","#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#a65628","#f781bf")
+cbbPalette<-fuckit
+
+d<-read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/07-expression-edgeR/raw/expression-forr.forr",delim="\t",col_names=FALSE,comment="#")
+# topr=[args.sid,gene,str(rawse),str(rawase),str(gl),str(secov),str(asecov),str(secov+asecov)]
+# R1	G10	ov	FBtr0144693_mRNA	1722.0	3.0	1467.0	23.9457596422	0.041717351293	23.9874769935
+# R1	G10	ov	FBtr0133093_mRNA	3.0	0.0	285.0	0.214734576655	0.0	0.214734576655
+names(d)<-c("replicate","generation","tissue","gene","rawse","rawase","genlen","se","ase","total")
+
+
+dgeme <- function(cou,gro) {
+  y <- DGEList(counts=cou,group=gro)
+  keep <- filterByExpr(y)
+  y <- y[keep,,keep.lib.sizes=FALSE]
+  y <- calcNormFactors(y)
+  design <- model.matrix(~gro)
+  y <- estimateDisp(y,design)
+  #fit <- glmFit(y,design)
+  #lrt <- glmLRT(fit,coef=2)
+  fit <- glmQLFit(y,design)
+  lrt <- glmQLFTest(fit,coef=2)
+  return(lrt)
+  
+}
+
+edgeme <- function(n1,n2,n3,e1,e2) {
+  merge<- n1 %>%  inner_join(n2, by = "gene")  %>%  inner_join(n3, by = "gene") %>%  inner_join(e1, by = "gene") %>%  inner_join(e2, by = "gene")
+  s<-setDT(merge)
+  dm<-data.matrix(s[,2:6])
+  rownames(dm)<-merge$gene
+  group <- factor(c(1,1,1,2,2))
+  lrt<-dgeme(dm,group)
+  return(lrt)
+}
+
+edgemeext <- function(n1,n2,n3,e5,e1,e2) {
+  merge<- n1 %>%  inner_join(n2, by = "gene")  %>%  inner_join(n3, by = "gene") %>% inner_join(e5, by = "gene") %>%  inner_join(e1, by = "gene") %>%  inner_join(e2, by = "gene")
+  s<-setDT(merge)
+  dm<-data.matrix(s[,2:7])
+  rownames(dm)<-merge$gene
+  group <- factor(c(1,1,1,1,2,2))
+  lrt<-dgeme(dm,group)
+  return(lrt)
+}
+
+# how to use edgeR
+# https://www.biostars.org/p/438794/
+
+# reformat data! Pivot wider
+# pivat_wider(names_from = type)
+
+
+
+# HOW edgeR works
+# STEP 1 remove all genes with 0 expression in all samples
+# STEP 2 one sample should be the reference sample
+# edgeR identifies the most average sample
+# STEP 3 select genes for computing the scaling factor
+
+# need vulcano plot !
+
+naive<-subset(d,generation=="naive")
+nR1<-subset(naive,replicate=="R1") %>% select(gene,rawse) %>% rename(naiveR1=rawse)
+nR2<-subset(naive,replicate=="R2") %>% select(gene,rawse) %>% rename(naiveR2=rawse)
+nR4<-subset(naive,replicate=="R4") %>% select(gene,rawse) %>% rename(naiveR4=rawse)
+
+
+rep2<-subset(d,replicate=="R2")
+eg5R2<-subset(rep2,generation=="G5") %>% select(gene,rawse) %>% rename(eg5R2=rawse)
+eg30R2<-subset(rep2,generation=="G30") %>% select(gene,rawse) %>% rename(eg30R2=rawse)
+eg40R2<-subset(rep2,generation=="G40") %>% select(gene,rawse) %>% rename(eg40R2=rawse)
+
+
+rep1<-subset(d,replicate=="R1")
+eg5R1<-subset(rep1,generation=="G5") %>% select(gene,rawse) %>% rename(eg5R1=rawse)
+eg30R1<-subset(rep1,generation=="G30") %>% select(gene,rawse) %>% rename(eg30R1=rawse)
+eg40R1<-subset(rep1,generation=="G40") %>% select(gene,rawse) %>% rename(eg40R1=rawse)
+
+rep4<-subset(d,replicate=="R4")
+eg5R4<-subset(rep4,generation=="G5") %>% select(gene,rawse) %>% rename(eg5R4=rawse)
+eg30R4<-subset(rep4,generation=="G30") %>% select(gene,rawse) %>% rename(eg30R4=rawse)
+eg40R4<-subset(rep4,generation=="G40") %>% select(gene,rawse) %>% rename(eg40R4=rawse)
+
+lm2<-edgeme(nR1,nR2,nR4,eg30R2,eg40R2)
+lm1<-edgeme(nR1,nR2,nR4,eg30R1,eg40R1)
+lm4<-edgeme(nR1,nR2,nR4,eg30R4,eg40R4)
+dflm2<-data.frame(gene=rownames(lm2$table),logfc=lm2$table$logFC, pval=lm2$table$PValue, fdr=p.adjust(lm2$table$PValue,method="BH"))
+dflm1<-data.frame(gene=rownames(lm1$table),logfc=lm1$table$logFC, pval=lm1$table$PValue, fdr=p.adjust(lm1$table$PValue,method="BH"))
+dflm4<-data.frame(gene=rownames(lm4$table),logfc=lm4$table$logFC, pval=lm4$table$PValue, fdr=p.adjust(lm4$table$PValue,method="BH"))
+
+lmvs2<-edgemeext(eg30R1,eg40R1,eg30R4,eg40R4,eg30R2,eg40R2)
+dflmvs2<-data.frame(gene=rownames(lmvs2$table),logfc=lmvs2$table$logFC, pval=lmvs2$table$PValue,fdr=p.adjust(as.numeric(lmvs2$table$PValue),method="BH"))
+
+#### Coloring FDR 
+fdr<-0.01
+fdr2<-0.001
+
+dflm1$col<-0
+dflm1[dflm1$fdr<fdr,]$col<-1
+#dflm1[dflm1$fdr<fdr2,]$col<-2
+dflm1$col<-as.factor(dflm1$col)
+
+dflm2$col<-0
+dflm2[dflm2$fdr<fdr,]$col<-1
+dflm2[dflm2$fdr<fdr2,]$col<-2
+dflm2$col<-as.factor(dflm2$col)
+
+dflm4$col<-0
+dflm4[dflm4$fdr<fdr,]$col<-1
+dflm4[dflm4$fdr<fdr2,]$col<-2
+dflm4$col<-as.factor(dflm4$col)
+
+dflmvs2$col<-0
+dflmvs2[dflmvs2$fdr<fdr,]$col<-1
+#dflmvs2[dflmvs2$fdr<fdr2,]$col<-2
+dflmvs2$col<-as.factor(dflmvs2$col)
+
+pvs2<-ggplot(data = dflmvs2, aes(y = -log10(pval), x = logfc,color=col )) +
+  geom_point(alpha = 1, size = 2)+scale_colour_manual(values=palete)+theme(legend.position = "none")+
+  ylab("-log10(p)")+xlab("log2(fold-change)")
+
+p1<-ggplot(data = dflm1, aes(y = -log10(pval), x = logfc,color=col )) +
+  geom_point(alpha = 1, size = 2)+scale_colour_manual(values=palete)+theme(legend.position = "none")+
+  ylab("-log10(p)")+xlab("log2(fold-change)")
+
+p2<-ggplot(data = dflm2, aes(y = -log10(pval), x = logfc,color=col )) +
+  geom_point(alpha = 1, size = 2)+scale_colour_manual(values=palete)+theme(legend.position = "none")+
+  ylab("-log10(p)")+xlab("log2(fold-change)")
+
+p4<-ggplot(data = dflm4, aes(y = -log10(pval), x = logfc,color=col )) +
+  geom_point(alpha = 1, size = 2)+scale_colour_manual(values=palete)+theme(legend.position = "none")+
+  ylab("-log10(p)")+xlab("log2(fold-change)")
+
+ 
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/07-expression-edgeR/graphs/edger-expression.pdf",width=8,height=3)
+
+grid.arrange(p1, p2, p4, ncol=3)
+dev.off()
+
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/07-expression-edgeR/graphs/edger-expression-rep2vsrest.pdf",width=3,height=3)
+plot(pvs2)
+dev.off()
+
+```
+
+
+

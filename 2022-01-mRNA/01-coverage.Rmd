@@ -1,0 +1,54 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Preprocess
+
+```{bash eval=FALSE}
+fai="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-mRNA/ref/dere_te_mRNA.fasta.fai"
+pyscript="/Users/rokofler/dev/te-tools/ere/mRNA-coverage-senseantisense.py"
+if="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-mRNA/map-bwamem"
+of="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-mRNA/01-visualize-Psease/raw"
+seqs="PPI251,FBtr0141238_mRNA,FBtr0141090_mRNA,FBtr0132023_mRNA,FBtr0137012_mRNA,FBtr0140282_mRNA,FBtr0141095_mRNA,FBtr0142660_mRNA,FBtr0140302_mRNA,FBtr0142342_mRNA,FBtr0143902_mRNA,FBtr0130551_mRNA,FBtr0145198_mRNA,FBtr0130342_mRNA,FBtr0135961_mRNA,FBtr0135197_mRNA,FBtr0130390_mRNA,FBtr0141576_mRNA,FBtr0139614_mRNA,FBtr0130391_mRNA,FBtr0143034_mRNA"
+
+
+samtools view $if/ovary_R1G10.sort.bam | python $pyscript --sam - --sample-id R1-G10-ov --seqs $seqs --fai $fai > $of/ovary_R1G10.txt
+samtools view $if/ovary_R1G35.sort.bam | python $pyscript --sam - --sample-id R1-G35-ov --seqs $seqs --fai $fai > $of/ovary_R1G35.txt
+samtools view $if/ovary_R2G10.sort.bam | python $pyscript --sam - --sample-id R2-G10-ov --seqs $seqs --fai $fai > $of/ovary_R2G10.txt
+samtools view $if/ovary_R2G35.sort.bam | python $pyscript --sam - --sample-id R2-G35-ov --seqs $seqs --fai $fai > $of/ovary_R2G35.txt
+samtools view $if/ovary_R4G10.sort.bam | python $pyscript --sam - --sample-id R4-G10-ov --seqs $seqs --fai $fai > $of/ovary_R4G10.txt
+samtools view $if/ovary_R4G35.sort.bam | python $pyscript --sam - --sample-id R4-G35-ov --seqs $seqs --fai $fai > $of/ovary_R4G35.txt
+
+samtools view $if/wf_R1G5.sort.bam | python $pyscript --sam - --sample-id R1-G5-wf --seqs $seqs --fai $fai > $of/wf_R1G5.txt
+samtools view $if/wf_R2G5.sort.bam | python $pyscript --sam - --sample-id R2-G5-wf --seqs $seqs --fai $fai > $of/wf_R2G5.txt
+samtools view $if/wf_R4G5.sort.bam | python $pyscript --sam - --sample-id R4-G5-wf --seqs $seqs --fai $fai > $of/wf_R4G5.txt
+
+samtools view $if/wf_R1G15.sort.bam | python $pyscript --sam - --sample-id R1-G15-wf --seqs $seqs --fai $fai > $of/wf_R1G15.txt
+samtools view $if/wf_R2G15.sort.bam | python $pyscript --sam - --sample-id R2-G15-wf --seqs $seqs --fai $fai > $of/wf_R2G15.txt
+samtools view $if/wf_R4G15.sort.bam | python $pyscript --sam - --sample-id R4-G15-wf --seqs $seqs --fai $fai > $of/wf_R4G15.txt
+
+samtools view $if/wf_R1G20.sort.bam | python $pyscript --sam - --sample-id R1-G20-wf --seqs $seqs --fai $fai > $of/wf_R1G20.txt
+samtools view $if/wf_R2G20.sort.bam | python $pyscript --sam - --sample-id R2-G20-wf --seqs $seqs --fai $fai > $of/wf_R2G20.txt
+samtools view $if/wf_R4G20.sort.bam | python $pyscript --sam - --sample-id R4-G20-wf --seqs $seqs --fai $fai > $of/wf_R4G20.txt
+
+samtools view $if/wf_R1G30.sort.bam | python $pyscript --sam - --sample-id R1-G30-wf --seqs $seqs --fai $fai > $of/wf_R1G30.txt
+samtools view $if/wf_R2G30.sort.bam | python $pyscript --sam - --sample-id R2-G30-wf --seqs $seqs --fai $fai > $of/wf_R2G30.txt
+samtools view $if/wf_R4G30.sort.bam | python $pyscript --sam - --sample-id R4-G30-wf --seqs $seqs --fai $fai > $of/wf_R4G30.txt
+
+samtools view $if/wf_R1G40.sort.bam | python $pyscript --sam - --sample-id R1-G40-wf --seqs $seqs --fai $fai > $of/wf_R1G40.txt
+samtools view $if/wf_R2G40.sort.bam | python $pyscript --sam - --sample-id R2-G40-wf --seqs $seqs --fai $fai > $of/wf_R2G40.txt
+samtools view $if/wf_R4G40.sort.bam | python $pyscript --sam - --sample-id R4-G40-wf --seqs $seqs --fai $fai > $of/wf_R4G40.txt
+
+samtools view $if/wf_naive1.sort.bam | python $pyscript --sam - --sample-id R1-naive-wf --seqs $seqs --fai $fai > $of/wf_naive1.txt
+samtools view $if/wf_naive2.sort.bam | python $pyscript --sam - --sample-id R2-naive-wf --seqs $seqs --fai $fai > $of/wf_naive2.txt
+samtools view $if/wf_naive3.sort.bam | python $pyscript --sam - --sample-id R4-naive-wf --seqs $seqs --fai $fai > $of/wf_naive3.txt% 
+
+cat *txt| perl -pe 's/-/\t/'|perl -pe 's/-/\t/' > all-forr.txt 
+```
+
+# Visualize

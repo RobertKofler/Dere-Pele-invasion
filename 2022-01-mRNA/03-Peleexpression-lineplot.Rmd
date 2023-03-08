@@ -1,0 +1,117 @@
+---
+title: "Pelement expression"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# collect the data
+
+```{bash eval=FALSE}
+fai="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-mRNA/ref/dere_te_mRNA.fasta.fai"
+pyscript="/Users/rokofler/dev/te-tools/ere/expression/mRNA-expression.py"
+if="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-mRNA/map-bwamem"
+of="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-mRNA/03-all-expressionlevel/raw"
+
+# samtools view ovary_R1G10.sort.bam | python ~/dev/te-tools/ere/mRNA-expression.py --sam - --fai ../ref/dere_te_mRNA.fasta.fai --sample-id bla
+samtools view $if/ovary_R1G10.sort.bam | python $pyscript --sam - --sample-id R1-G10-ov --fai $fai > $of/expr_ovary_R1G10.txt
+samtools view $if/ovary_R1G35.sort.bam | python $pyscript --sam - --sample-id R1-G35-ov --fai $fai > $of/expr_ovary_R1G35.txt
+samtools view $if/ovary_R2G10.sort.bam | python $pyscript --sam - --sample-id R2-G10-ov --fai $fai > $of/expr_ovary_R2G10.txt
+samtools view $if/ovary_R2G35.sort.bam | python $pyscript --sam - --sample-id R2-G35-ov --fai $fai > $of/expr_ovary_R2G35.txt
+samtools view $if/ovary_R4G10.sort.bam | python $pyscript --sam - --sample-id R4-G10-ov --fai $fai > $of/expr_ovary_R4G10.txt
+samtools view $if/ovary_R4G35.sort.bam | python $pyscript --sam - --sample-id R4-G35-ov --fai $fai > $of/expr_ovary_R4G35.txt
+
+samtools view $if/wf_R1G5.sort.bam | python $pyscript --sam - --sample-id R1-G5-wf --fai $fai > $of/expr_wf_R1G5.txt
+samtools view $if/wf_R2G5.sort.bam | python $pyscript --sam - --sample-id R2-G5-wf --fai $fai > $of/expr_wf_R2G5.txt
+samtools view $if/wf_R4G5.sort.bam | python $pyscript --sam - --sample-id R4-G5-wf --fai $fai > $of/expr_wf_R4G5.txt
+
+samtools view $if/wf_R1G15.sort.bam | python $pyscript --sam - --sample-id R1-G15-wf --fai $fai > $of/expr_wf_R1G15.txt
+samtools view $if/wf_R2G15.sort.bam | python $pyscript --sam - --sample-id R2-G15-wf --fai $fai > $of/expr_wf_R2G15.txt
+samtools view $if/wf_R4G15.sort.bam | python $pyscript --sam - --sample-id R4-G15-wf --fai $fai > $of/expr_wf_R4G15.txt
+
+samtools view $if/wf_R1G20.sort.bam | python $pyscript --sam - --sample-id R1-G20-wf --fai $fai > $of/expr_wf_R1G20.txt
+samtools view $if/wf_R2G20.sort.bam | python $pyscript --sam - --sample-id R2-G20-wf --fai $fai > $of/expr_wf_R2G20.txt
+samtools view $if/wf_R4G20.sort.bam | python $pyscript --sam - --sample-id R4-G20-wf --fai $fai > $of/expr_wf_R4G20.txt
+
+samtools view $if/wf_R1G30.sort.bam | python $pyscript --sam - --sample-id R1-G30-wf --fai $fai > $of/expr_wf_R1G30.txt
+samtools view $if/wf_R2G30.sort.bam | python $pyscript --sam - --sample-id R2-G30-wf --fai $fai > $of/expr_wf_R2G30.txt
+samtools view $if/wf_R4G30.sort.bam | python $pyscript --sam - --sample-id R4-G30-wf --fai $fai > $of/expr_wf_R4G30.txt
+
+samtools view $if/wf_R1G40.sort.bam | python $pyscript --sam - --sample-id R1-G40-wf --fai $fai > $of/expr_wf_R1G40.txt
+samtools view $if/wf_R2G40.sort.bam | python $pyscript --sam - --sample-id R2-G40-wf --fai $fai > $of/expr_wf_R2G40.txt
+samtools view $if/wf_R4G40.sort.bam | python $pyscript --sam - --sample-id R4-G40-wf --fai $fai > $of/expr_wf_R4G40.txt
+
+samtools view $if/wf_naive1.sort.bam | python $pyscript --sam - --sample-id R1-naive-wf --fai $fai > $of/expr_wf_naive1.txt
+samtools view $if/wf_naive2.sort.bam | python $pyscript --sam - --sample-id R2-naive-wf --fai $fai > $of/expr_wf_naive2.txt
+samtools view $if/wf_naive3.sort.bam | python $pyscript --sam - --sample-id R4-naive-wf --fai $fai > $of/expr_wf_naive3.txt
+
+cat expr_* |perl -pe 's/-/\t/'|perl -pe 's/-/\t/' >expression-forr.forr
+```
+
+# Visualize 
+
+## P-element expression level line plot
+
+```{R}
+library(tidyverse)
+library(RColorBrewer)
+library(plyr)
+theme_set(theme_bw())
+tresrep<-c("#e41a1c","#377eb8","#4daf4a")
+
+t=read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/03-all-expressionlevel/raw/expression-forr.forr",delim="\t",col_names=FALSE,comment="#")
+# R1	G10	ov	FBtr0144693_mRNA	1722.0	3.0	1467.0	23.9457596422	0.041717351293	23.9874769935
+# R1	G10	ov	FBtr0133093_mRNA	3.0	0.0	285.0	0.214734576655	0.0	0.214734576655
+# topr=[args.sid,gene,str(rawse),str(rawase),str(gl),str(secov),str(asecov),str(secov+asecov)]
+names(t)<-c("replicate","generation","tissue","gene","rawse","rawase","genlen","sense","antisense","total")
+t<-subset(t,gene=="PPI251" & tissue=="wf")
+t[t$generation=="naive",]$generation<-"G0" # lets use the naive flies as generation 0
+t$generation<-as.numeric(substring(t$generation, 2))
+
+
+s<-ggplot()+geom_line(data=t,aes(x=generation,y=sense,color=replicate),size=1)+
+  # geom_point(data=cold,aes(x=generation,y=u,color=replicate),size=ls)+
+  theme(strip.text=element_blank(),legend.position=c(0.1,0.9))+
+#  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
+  ylab("expression [rpkm]")+scale_colour_manual(values=tresrep)+xlim(0,48)
+
+plot(s)
+postscript(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/03-all-expressionlevel/graphs/sense-expressions.ps",width=6,height=2.5)
+plot(s)
+dev.off()
+```
+
+## P-element expression level line plot -earyl generations (presentation)
+
+```{R}
+library(tidyverse)
+library(RColorBrewer)
+library(plyr)
+theme_set(theme_bw())
+tresrep<-c("#e41a1c","#377eb8","#4daf4a")
+
+t=read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/03-all-expressionlevel/raw/expression-forr.forr",delim="\t",col_names=FALSE,comment="#")
+# R1	G10	ov	FBtr0144693_mRNA	1722.0	3.0	1467.0	23.9457596422	0.041717351293	23.9874769935
+# R1	G10	ov	FBtr0133093_mRNA	3.0	0.0	285.0	0.214734576655	0.0	0.214734576655
+# topr=[args.sid,gene,str(rawse),str(rawase),str(gl),str(secov),str(asecov),str(secov+asecov)]
+names(t)<-c("replicate","generation","tissue","gene","rawse","rawase","genlen","sense","antisense","total")
+t<-subset(t,gene=="PPI251" & tissue=="wf")
+t[t$generation=="naive",]$generation<-"G0" # lets use the naive flies as generation 0
+t$generation<-as.numeric(substring(t$generation, 2))
+t<-subset(t,generation<=20)
+
+
+s<-ggplot()+geom_line(data=t,aes(x=generation,y=total,color=replicate),size=1)+
+  # geom_point(data=cold,aes(x=generation,y=u,color=replicate),size=ls)+
+  theme(strip.text=element_blank(),legend.position=c(0.1,0.9))+
+#  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
+  ylab("expression [rpkm]")+scale_colour_manual(values=tresrep)+xlim(0,20)+
+  theme(legend.position = "none")
+
+plot(s)
+postscript(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/03-all-expressionlevel/graphs/sense-expressions-earlygenpresi.ps",width=3,height=2.5)
+plot(s)
+dev.off()
+```

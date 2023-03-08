@@ -1,0 +1,371 @@
+---
+title: "expression and splicing"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Collect expression
+```{bash eval=FALSE}
+
+fai="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/ref/dere_te_mRNA.fasta.fai"
+pyscript="/Users/rokofler/dev/te-tools/ere/expression/mRNA-coverage-senseantisense.py"
+if="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/map-gsnap-trans"
+of="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/raw-expr"
+seqs="PPI251,FBtr0141238_mRNA,FBtr0138851_mRNA,FBtr0141090_mRNA,FBtr0132023_mRNA,FBtr0137012_mRNA,FBtr0140282_mRNA,FBtr0141095_mRNA,FBtr0142660_mRNA,FBtr0140302_mRNA,FBtr0142342_mRNA,FBtr0143902_mRNA,FBtr0130551_mRNA,FBtr0145198_mRNA,FBtr0130342_mRNA,FBtr0135961_mRNA,FBtr0135197_mRNA,FBtr0130390_mRNA,FBtr0141576_mRNA,FBtr0139614_mRNA,FBtr0130391_mRNA,FBtr0143034_mRNA"
+
+
+samtools view $if/gt_ovary_R1G10.sort.bam | python $pyscript --sam - --sample-id R1-G10-ov --seqs $seqs --fai $fai -a  > $of/ovary_R1G10.txt
+samtools view $if/gt_ovary_R1G35.sort.bam | python $pyscript --sam - --sample-id R1-G35-ov --seqs $seqs --fai $fai -a  > $of/ovary_R1G35.txt
+samtools view $if/gt_ovary_R2G10.sort.bam | python $pyscript --sam - --sample-id R2-G10-ov --seqs $seqs --fai $fai -a  > $of/ovary_R2G10.txt
+samtools view $if/gt_ovary_R2G35.sort.bam | python $pyscript --sam - --sample-id R2-G35-ov --seqs $seqs --fai $fai -a  > $of/ovary_R2G35.txt
+samtools view $if/gt_ovary_R4G10.sort.bam | python $pyscript --sam - --sample-id R4-G10-ov --seqs $seqs --fai $fai -a  > $of/ovary_R4G10.txt
+samtools view $if/gt_ovary_R4G35.sort.bam | python $pyscript --sam - --sample-id R4-G35-ov --seqs $seqs --fai $fai -a  > $of/ovary_R4G35.txt
+
+samtools view $if/gt_wf_R1G5.sort.bam | python $pyscript --sam - --sample-id R1-G5-wf --seqs $seqs --fai $fai -a  > $of/wf_R1G5.txt
+samtools view $if/gt_wf_R2G5.sort.bam | python $pyscript --sam - --sample-id R2-G5-wf --seqs $seqs --fai $fai -a  > $of/wf_R2G5.txt
+samtools view $if/gt_wf_R4G5.sort.bam | python $pyscript --sam - --sample-id R4-G5-wf --seqs $seqs --fai $fai -a  > $of/wf_R4G5.txt
+
+samtools view $if/gt_wf_R1G15.sort.bam | python $pyscript --sam - --sample-id R1-G15-wf --seqs $seqs --fai $fai -a  > $of/wf_R1G15.txt
+samtools view $if/gt_wf_R2G15.sort.bam | python $pyscript --sam - --sample-id R2-G15-wf --seqs $seqs --fai $fai -a  > $of/wf_R2G15.txt
+samtools view $if/gt_wf_R4G15.sort.bam | python $pyscript --sam - --sample-id R4-G15-wf --seqs $seqs --fai $fai -a  > $of/wf_R4G15.txt
+
+samtools view $if/gt_wf_R1G20.sort.bam | python $pyscript --sam - --sample-id R1-G20-wf --seqs $seqs --fai $fai -a  > $of/wf_R1G20.txt
+samtools view $if/gt_wf_R2G20.sort.bam | python $pyscript --sam - --sample-id R2-G20-wf --seqs $seqs --fai $fai -a  > $of/wf_R2G20.txt
+samtools view $if/gt_wf_R4G20.sort.bam | python $pyscript --sam - --sample-id R4-G20-wf --seqs $seqs --fai $fai -a  > $of/wf_R4G20.txt
+
+samtools view $if/gt_wf_R1G30.sort.bam | python $pyscript --sam - --sample-id R1-G30-wf --seqs $seqs --fai $fai -a  > $of/wf_R1G30.txt
+samtools view $if/gt_wf_R2G30.sort.bam | python $pyscript --sam - --sample-id R2-G30-wf --seqs $seqs --fai $fai -a  > $of/wf_R2G30.txt
+samtools view $if/gt_wf_R4G30.sort.bam | python $pyscript --sam - --sample-id R4-G30-wf --seqs $seqs --fai $fai -a  > $of/wf_R4G30.txt
+
+samtools view $if/gt_wf_R1G40.sort.bam | python $pyscript --sam - --sample-id R1-G40-wf --seqs $seqs --fai $fai -a  > $of/wf_R1G40.txt
+samtools view $if/gt_wf_R2G40.sort.bam | python $pyscript --sam - --sample-id R2-G40-wf --seqs $seqs --fai $fai -a  > $of/wf_R2G40.txt
+samtools view $if/gt_wf_R4G40.sort.bam | python $pyscript --sam - --sample-id R4-G40-wf --seqs $seqs --fai $fai -a  > $of/wf_R4G40.txt
+
+samtools view $if/gt_wf_naive1.sort.bam | python $pyscript --sam - --sample-id R1-naive-wf --seqs $seqs --fai $fai -a  > $of/wf_naive1.txt
+samtools view $if/gt_wf_naive2.sort.bam | python $pyscript --sam - --sample-id R2-naive-wf --seqs $seqs --fai $fai -a  > $of/wf_naive2.txt
+samtools view $if/gt_wf_naive3.sort.bam | python $pyscript --sam - --sample-id R4-naive-wf --seqs $seqs --fai $fai -a  > $of/wf_naive3.txt
+cat *.txt| perl -pe 's/-/\t/'|perl -pe 's/-/\t/' > expr.forr 
+```
+
+
+# Collect splicing
+```{bash eval=FALSE}
+pyscript="/Users/rokofler/dev/te-tools/ere/expression/mRNA-splicing-senseantisense.py"
+if="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/map-gsnap-trans"
+of="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/raw-spli"
+seqs="PPI251,FBtr0141238_mRNA,FBtr0138851_mRNA,FBtr0141090_mRNA,FBtr0132023_mRNA,FBtr0137012_mRNA,FBtr0140282_mRNA,FBtr0141095_mRNA,FBtr0142660_mRNA,FBtr0140302_mRNA,FBtr0142342_mRNA,FBtr0143902_mRNA,FBtr0130551_mRNA,FBtr0145198_mRNA,FBtr0130342_mRNA,FBtr0135961_mRNA,FBtr0135197_mRNA,FBtr0130390_mRNA,FBtr0141576_mRNA,FBtr0139614_mRNA,FBtr0130391_mRNA,FBtr0143034_mRNA"
+
+
+samtools view $if/gt_ovary_R1G10.sort.bam | python $pyscript --sam - --sample-id R1-G10-ov --seqs $seqs  > $of/ovary_R1G10.txt
+samtools view $if/gt_ovary_R1G35.sort.bam | python $pyscript --sam - --sample-id R1-G35-ov --seqs $seqs  > $of/ovary_R1G35.txt
+samtools view $if/gt_ovary_R2G10.sort.bam | python $pyscript --sam - --sample-id R2-G10-ov --seqs $seqs  > $of/ovary_R2G10.txt
+samtools view $if/gt_ovary_R2G35.sort.bam | python $pyscript --sam - --sample-id R2-G35-ov --seqs $seqs  > $of/ovary_R2G35.txt
+samtools view $if/gt_ovary_R4G10.sort.bam | python $pyscript --sam - --sample-id R4-G10-ov --seqs $seqs  > $of/ovary_R4G10.txt
+samtools view $if/gt_ovary_R4G35.sort.bam | python $pyscript --sam - --sample-id R4-G35-ov --seqs $seqs  > $of/ovary_R4G35.txt
+
+samtools view $if/gt_wf_R1G5.sort.bam | python $pyscript --sam - --sample-id R1-G5-wf --seqs $seqs  > $of/wf_R1G5.txt
+samtools view $if/gt_wf_R2G5.sort.bam | python $pyscript --sam - --sample-id R2-G5-wf --seqs $seqs  > $of/wf_R2G5.txt
+samtools view $if/gt_wf_R4G5.sort.bam | python $pyscript --sam - --sample-id R4-G5-wf --seqs $seqs  > $of/wf_R4G5.txt
+
+samtools view $if/gt_wf_R1G15.sort.bam | python $pyscript --sam - --sample-id R1-G15-wf --seqs $seqs  > $of/wf_R1G15.txt
+samtools view $if/gt_wf_R2G15.sort.bam | python $pyscript --sam - --sample-id R2-G15-wf --seqs $seqs  > $of/wf_R2G15.txt
+samtools view $if/gt_wf_R4G15.sort.bam | python $pyscript --sam - --sample-id R4-G15-wf --seqs $seqs  > $of/wf_R4G15.txt
+
+samtools view $if/gt_wf_R1G20.sort.bam | python $pyscript --sam - --sample-id R1-G20-wf --seqs $seqs  > $of/wf_R1G20.txt
+samtools view $if/gt_wf_R2G20.sort.bam | python $pyscript --sam - --sample-id R2-G20-wf --seqs $seqs  > $of/wf_R2G20.txt
+samtools view $if/gt_wf_R4G20.sort.bam | python $pyscript --sam - --sample-id R4-G20-wf --seqs $seqs  > $of/wf_R4G20.txt
+
+samtools view $if/gt_wf_R1G30.sort.bam | python $pyscript --sam - --sample-id R1-G30-wf --seqs $seqs  > $of/wf_R1G30.txt
+samtools view $if/gt_wf_R2G30.sort.bam | python $pyscript --sam - --sample-id R2-G30-wf --seqs $seqs  > $of/wf_R2G30.txt
+samtools view $if/gt_wf_R4G30.sort.bam | python $pyscript --sam - --sample-id R4-G30-wf --seqs $seqs  > $of/wf_R4G30.txt
+
+samtools view $if/gt_wf_R1G40.sort.bam | python $pyscript --sam - --sample-id R1-G40-wf --seqs $seqs  > $of/wf_R1G40.txt
+samtools view $if/gt_wf_R2G40.sort.bam | python $pyscript --sam - --sample-id R2-G40-wf --seqs $seqs  > $of/wf_R2G40.txt
+samtools view $if/gt_wf_R4G40.sort.bam | python $pyscript --sam - --sample-id R4-G40-wf --seqs $seqs  > $of/wf_R4G40.txt
+
+samtools view $if/gt_wf_naive1.sort.bam | python $pyscript --sam - --sample-id R1-naive-wf --seqs $seqs  > $of/wf_naive1.txt
+samtools view $if/gt_wf_naive2.sort.bam | python $pyscript --sam - --sample-id R2-naive-wf --seqs $seqs  > $of/wf_naive2.txt
+samtools view $if/gt_wf_naive3.sort.bam | python $pyscript --sam - --sample-id R4-naive-wf --seqs $seqs  > $of/wf_naive3.txt
+cat *.txt| perl -pe 's/-/\t/'|perl -pe 's/-/\t/' > spli.forr
+```
+
+# Visualize
+## Ovary
+```{R}
+library(ggplot2)
+theme_set(theme_bw())
+
+
+#genes<-c("PPI251","FBtr0137012_mRNA","FBtr0140282_mRNA","FBtr0141095_mRNA","FBtr0142660_mRNA","FBtr0140302_mRNA",
+#         "FBtr0142342_mRNA","FBtr0143902_mRNA","FBtr0130551_mRNA","FBtr0145198_mRNA","FBtr0130342_mRNA","FBtr0135961_mRNA",
+#         "FBtr0135197_mRNA","FBtr0130390_mRNA","FBtr0141576_mRNA","FBtr0139614_mRNA","FBtr0130391_mRNA",
+#         "FBtr0141238_mRNA","FBtr0141090_mRNA","FBtr0132023_mRNA","FBtr0143034_mRNA")
+#sc<-c("PPI251","spnE","cuff","Dcr2","Hen1","Hen1","krimp","loqs","r2d2","vas",
+
+target<-"PPI251"
+ttissue<-"ov" # target tissue
+sminfreq<-0.1
+
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/raw-expr/expr.forr")
+names(h)<-c("rep","time","tissue","strand","gene","pos","cov")
+
+a<-subset(h,gene==target & tissue==ttissue)
+a$key<-paste0(a$rep,"_",a$time,"_",a$pos,"_",a$strand)
+
+
+a$time <- factor(a$time, levels=c("naive", "G5", "G10", "G15", "G20", "G30","G35","G40"))
+s<-subset(a,strand=="se")
+as<-subset(a,strand=="ase")
+
+spli<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/raw-spli/spli.forr")
+# head
+# R1	G10	ov	se	FBtr0143902_mRNA	1009-1151	1009	1151	1	0.0220242525784
+#R1	G10	ov	se	FBtr0143902_mRNA	1009-1148	1009	1148	1	0.0220242525784
+names(spli)<-c("rep","time","tissue","strand","gene","skey","start","end","rawcount","freq")
+aspli<-subset(spli,gene==target & freq>sminfreq & tissue==ttissue)
+aspli$time <- factor(aspli$time, levels=c("naive", "G5", "G10", "G15", "G20", "G30","G35","G40"))
+aspli$rep<- as.factor(aspli$rep)
+aspli$start<-aspli$start-1 # position inacurracy, graph is more appealing
+aspli$keystart<-paste0(aspli$rep,"_",aspli$time,"_",aspli$start,"_",aspli$strand)
+aspli$keyend<-paste0(aspli$rep,"_",aspli$time,"_",aspli$end,"_",aspli$strand)
+
+
+aspli<-merge(x=aspli,y=a[,c("key","cov")],by.x="keystart",by.y="key")
+aspli<-merge(x=aspli,y=a[,c("key","cov")],by.x="keyend",by.y="key")
+aspli$size<-log(aspli$freq+1)+1
+
+
+a_s<-subset(aspli,strand=="se")
+a_as<-subset(aspli,strand=="ase")
+  
+  
+plot <- ggplot() +
+    geom_polygon(data=s,mapping=aes(x=pos, y=cov), fill='grey', color='grey') +
+    geom_polygon(data=as, aes(x=pos, y=-cov), fill='lightgrey', color='lightgrey')+
+    geom_curve(data=a_s, mapping=aes(x=start, y=cov.x, xend=end, yend=cov.y,size=size), curvature=-0.2, ncp=10, show.legend=FALSE)+
+    geom_curve(data=a_as, mapping=aes(x=start, y=-cov.x, xend=end, yend=-cov.y,size=size), curvature=0.2, ncp=10, show.legend=FALSE)+
+    facet_grid(time~rep)+scale_size(range=c(0.2,2))+xlab("position")+ylab("expression level [rpm]")
+#     q <- p + geom_curve(data=coords, mapping=aes(x=x, y=y, xend=xend, yend=yend, 
+# size=size), curvature=-0.2, ncp=10, show.legend=FALSE) +
+#  scale_size(range = sizerange)
+plot(plot)
+outfile<-"/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/graph/PPI251_ovary.pdf"
+  
+  pdf(file=outfile,width=8,height=4)
+  plot(plot)
+  dev.off()
+```
+
+## Whole fly
+```{R}
+library(ggplot2)
+theme_set(theme_bw())
+
+
+#genes<-c("PPI251","FBtr0137012_mRNA","FBtr0140282_mRNA","FBtr0141095_mRNA","FBtr0142660_mRNA","FBtr0140302_mRNA",
+#         "FBtr0142342_mRNA","FBtr0143902_mRNA","FBtr0130551_mRNA","FBtr0145198_mRNA","FBtr0130342_mRNA","FBtr0135961_mRNA",
+#         "FBtr0135197_mRNA","FBtr0130390_mRNA","FBtr0141576_mRNA","FBtr0139614_mRNA","FBtr0130391_mRNA",
+#         "FBtr0141238_mRNA","FBtr0141090_mRNA","FBtr0132023_mRNA","FBtr0143034_mRNA")
+#sc<-c("PPI251","spnE","cuff","Dcr2","Hen1","Hen1","krimp","loqs","r2d2","vas",
+
+target<-"PPI251"
+ttissue<-"wf" # target tissue
+sminfreq<-0.1
+
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/raw-expr/expr.forr")
+names(h)<-c("rep","time","tissue","strand","gene","pos","cov")
+
+a<-subset(h,gene==target & tissue==ttissue)
+a$key<-paste0(a$rep,"_",a$time,"_",a$pos,"_",a$strand)
+
+
+a$time <- factor(a$time, levels=c("naive", "G5", "G10", "G15", "G20", "G30","G35","G40"))
+s<-subset(a,strand=="se")
+as<-subset(a,strand=="ase")
+
+spli<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/raw-spli/spli.forr")
+# head
+# R1	G10	ov	se	FBtr0143902_mRNA	1009-1151	1009	1151	1	0.0220242525784
+#R1	G10	ov	se	FBtr0143902_mRNA	1009-1148	1009	1148	1	0.0220242525784
+names(spli)<-c("rep","time","tissue","strand","gene","skey","start","end","rawcount","freq")
+aspli<-subset(spli,gene==target & freq>sminfreq & tissue==ttissue)
+aspli$time <- factor(aspli$time, levels=c("naive", "G5", "G10", "G15", "G20", "G30","G35","G40"))
+aspli$rep<- as.factor(aspli$rep)
+aspli$start<-aspli$start-1 # position inacurracy, graph is more appealing
+aspli$keystart<-paste0(aspli$rep,"_",aspli$time,"_",aspli$start,"_",aspli$strand)
+aspli$keyend<-paste0(aspli$rep,"_",aspli$time,"_",aspli$end,"_",aspli$strand)
+
+
+aspli<-merge(x=aspli,y=a[,c("key","cov")],by.x="keystart",by.y="key")
+aspli<-merge(x=aspli,y=a[,c("key","cov")],by.x="keyend",by.y="key")
+aspli$size<-log(aspli$freq+1)+1
+
+
+a_s<-subset(aspli,strand=="se")
+a_as<-subset(aspli,strand=="ase")
+  
+  
+plot <- ggplot() +
+    geom_polygon(data=s,mapping=aes(x=pos, y=cov), fill='grey', color='grey') +
+    geom_polygon(data=as, aes(x=pos, y=-cov), fill='lightgrey', color='lightgrey')+
+    geom_curve(data=a_s, mapping=aes(x=start, y=cov.x, xend=end, yend=cov.y,size=size), curvature=-0.2, ncp=10, show.legend=FALSE)+
+    geom_curve(data=a_as, mapping=aes(x=start, y=-cov.x, xend=end, yend=-cov.y,size=size), curvature=0.2, ncp=10, show.legend=FALSE)+
+    facet_grid(time~rep)+scale_size(range=c(0.2,2))+xlab("position")+ylab("expression level [rpm]")
+#     q <- p + geom_curve(data=coords, mapping=aes(x=x, y=y, xend=xend, yend=yend, 
+# size=size), curvature=-0.2, ncp=10, show.legend=FALSE) +
+#  scale_size(range = sizerange)
+plot(plot)
+outfile<-"/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/graph/PPI251_wf.pdf"
+  
+  pdf(file=outfile,width=8,height=8)
+  plot(plot)
+  dev.off()
+```
+
+## Linegraph IVS3 (exon3)
+```{R}
+library(tidyverse)
+library(RColorBrewer)
+library(plyr)
+theme_set(theme_bw())
+tresrep<-c("#e41a1c","#377eb8","#4daf4a")
+
+# Annotation
+# PPI251	ensembl	exon	153	442	.	+	.	gene_id "pele"; transcript_id "pele1";
+# PPI251	ensembl	exon	501	1168	.	+	.	gene_id "pele"; transcript_id "pele1";
+# PPI251	ensembl	exon	1222	1947	.	+	.	gene_id "pele"; transcript_id "pele1";
+# PPI251	ensembl	exon	2138	2709	.	+	.	gene_id "pele"; transcript_id "pele1";
+
+t<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/raw-spli/spli.forr")
+# head
+# R1	G10	ov	se	FBtr0143902_mRNA	1009-1151	1009	1151	1	0.0220242525784
+#R1	G10	ov	se	FBtr0143902_mRNA	1009-1148	1009	1148	1	0.0220242525784
+names<-c("rep","time","tissue","strand","gene","skey","start","end","rawcount","freq")
+names(t)<-names
+t<-subset(t,gene=="PPI251" & tissue=="wf" & strand=="se")
+# t[t$time=="naive",]$time<-"G0" # lets use the naive flies as generation 0; but no splicing in naive flies
+t$time<-as.numeric(substring(t$time, 2))
+
+t<-subset(t,skey=="1948-2139") # delta23
+missingvalues=data.frame(rep=c("R1","R2","R4","R1","R4","R1","R4"),time=c(0,0,0,5,30,40,40),tissue=rep("wf",7),
+                         strand=rep("se",7),gene=rep("PPI251",7),skey=rep("1948-2139",7),
+                        start=rep(0,7),end=rep(0,7),rawcount=rep(0,7),freq=rep(0,7))
+# G0, 124
+# G5,  1
+# G30, 4
+# G40, 14
+t<-rbind(t,missingvalues)
+#t<-subset(t,skey=="443-502") # delta12
+
+
+s<-ggplot()+geom_line(data=t,aes(x=time,y=freq,color=rep),size=1)+
+  # geom_point(data=cold,aes(x=generation,y=u,color=replicate),size=ls)+
+  theme(strip.text=element_blank(),legend.position=c(0.1,0.9))+
+  #  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
+  ylab("splicing level IVS3 [srpm]")+scale_colour_manual(values=tresrep)+xlim(0,48)
+
+plot(s)
+postscript(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/graph/IVS3_expression.ps",width=5.95,height=2.5)
+plot(s)
+dev.off()
+```
+
+## Linegraph IVS2
+```{R}
+library(tidyverse)
+library(RColorBrewer)
+library(plyr)
+theme_set(theme_bw())
+tresrep<-c("#e41a1c","#377eb8","#4daf4a")
+
+# Annotation
+# PPI251	ensembl	exon	153	442	.	+	.	gene_id "pele"; transcript_id "pele1";
+# PPI251	ensembl	exon	501	1168	.	+	.	gene_id "pele"; transcript_id "pele1";
+# PPI251	ensembl	exon	1222	1947	.	+	.	gene_id "pele"; transcript_id "pele1";
+# PPI251	ensembl	exon	2138	2709	.	+	.	gene_id "pele"; transcript_id "pele1";
+
+t<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/raw-spli/spli.forr")
+# head
+# R1	G10	ov	se	FBtr0143902_mRNA	1009-1151	1009	1151	1	0.0220242525784
+#R1	G10	ov	se	FBtr0143902_mRNA	1009-1148	1009	1148	1	0.0220242525784
+names<-c("rep","time","tissue","strand","gene","skey","start","end","rawcount","freq")
+names(t)<-names
+t<-subset(t,gene=="PPI251" & tissue=="wf" & strand=="se")
+# t[t$time=="naive",]$time<-"G0" # lets use the naive flies as generation 0; but no splicing in naive flies
+t$time<-as.numeric(substring(t$time, 2))
+
+t<-subset(t,skey=="1169-1223")
+missingvalues=data.frame(rep=c("R1","R2","R4"),time=c(0,0,0),tissue=rep("wf",3),
+                         strand=rep("se",3),gene=rep("PPI251",3),skey=rep("1169-1223",3),
+                        start=rep(0,3),end=rep(0,3),rawcount=rep(0,3),freq=rep(0,3))
+# G0, 124
+# G5,  1
+# G30, 4
+# G40, 14
+t<-rbind(t,missingvalues)
+
+
+
+s<-ggplot()+geom_line(data=t,aes(x=time,y=freq,color=rep),size=1,lty=3)+
+  # geom_point(data=cold,aes(x=generation,y=u,color=replicate),size=ls)+
+  theme(strip.text=element_blank(),legend.position=c(0.1,0.9))+
+  #  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
+  ylab("splicing level IVS2 [rpm]")+scale_colour_manual(values=tresrep)+xlim(0,48)
+
+plot(s)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/graph/IVS2_expression.pdf",width=5.95,height=2.5)
+plot(s)
+dev.off()
+```
+
+## Linegraph IVS1
+```{R}
+library(tidyverse)
+library(RColorBrewer)
+library(plyr)
+theme_set(theme_bw())
+tresrep<-c("#e41a1c","#377eb8","#4daf4a")
+
+# Annotation
+# PPI251	ensembl	exon	153	442	.	+	.	gene_id "pele"; transcript_id "pele1";
+# PPI251	ensembl	exon	501	1168	.	+	.	gene_id "pele"; transcript_id "pele1";
+# PPI251	ensembl	exon	1222	1947	.	+	.	gene_id "pele"; transcript_id "pele1";
+# PPI251	ensembl	exon	2138	2709	.	+	.	gene_id "pele"; transcript_id "pele1";
+
+t<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/raw-spli/spli.forr")
+# head
+# R1	G10	ov	se	FBtr0143902_mRNA	1009-1151	1009	1151	1	0.0220242525784
+#R1	G10	ov	se	FBtr0143902_mRNA	1009-1148	1009	1148	1	0.0220242525784
+names<-c("rep","time","tissue","strand","gene","skey","start","end","rawcount","freq")
+names(t)<-names
+t<-subset(t,gene=="PPI251" & tissue=="wf" & strand=="se")
+# t[t$time=="naive",]$time<-"G0" # lets use the naive flies as generation 0; but no splicing in naive flies
+t$time<-as.numeric(substring(t$time, 2))
+
+t<-subset(t,skey=="443-502")
+missingvalues=data.frame(rep=c("R1","R2","R4"),time=c(0,0,0),tissue=rep("wf",3),
+                         strand=rep("se",3),gene=rep("PPI251",3),skey=rep("443-502",3),
+                        start=rep(0,3),end=rep(0,3),rawcount=rep(0,3),freq=rep(0,3))
+# G0, 124
+# G5,  1
+# G30, 4
+# G40, 14
+t<-rbind(t,missingvalues)
+
+
+
+s<-ggplot()+geom_line(data=t,aes(x=time,y=freq,color=rep),size=1,lty=1)+
+  # geom_point(data=cold,aes(x=generation,y=u,color=replicate),size=ls)+
+  theme(strip.text=element_blank(),legend.position=c(0.1,0.9))+
+  #  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
+  ylab("splicing level IVS1 [rpm]")+scale_colour_manual(values=tresrep)+xlim(0,48)
+
+plot(s)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visualize-exprAndSplice/graph/IVS1_expression.pdf",width=5.95,height=2.5)
+plot(s)
+dev.off()
+```

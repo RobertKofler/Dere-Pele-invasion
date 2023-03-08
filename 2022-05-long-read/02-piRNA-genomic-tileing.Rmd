@@ -1,0 +1,137 @@
+---
+title: "02-piRNA-tileing"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# preproces
+## map small RNAs
+
+## Preprocess small RNA data
+```{bash eval=FALSE}
+mv dere_JBE-33_embryo_trimmed_clean_sf_sorted.bam embryo.sort.bam
+samtools index embryo.sort.bam
+samtools merge ovaries.sort.bam dere_naive_ovaries_R1_trim_clean_sf_sorted.bam dere_naive_ovaries_R2_trim_clean_sf_sorted.bam dere_naive_ovaries_R3_trim_clean_sf_sorted.bam 
+samtools index ovaries.sort.bam
+```
+
+## generate tileing
+
+### pre-data: miRNAs per sample
+```{bash eval=FALSE}
+dere_JBE-33_embryo_trimmed_clean_sf.fastq_trim_clean_sf_sorted.bam      gen     mirnacount      1933914
+dere_naive_ovaries_R1_trim_clean_sf_sorted.bam	gen	mirnacount	3028122	2
+dere_naive_ovaries_R2_trim_clean_sf_sorted.bam	gen	mirnacount	2548753	2
+dere_naive_ovaries_R3_trim_clean_sf_sorted.bam	gen	mirnacount	2445386	2
+
+embryo-sum: 1933914
+ovary-sum: 8022261
+```
+### tileing main 
+```{bash eval=FALSE}
+# script uses only piRNAs with 23 - 29 
+# normalization to a million miRNAs (numbers) or a million piRNAs ("pirna")
+python ~/dev/te-tools/ere/piRNA-tiler.py --ovary ../raw-smallRNAmappings/ovaries.sort.sam --embryo ../raw-smallRNAmappings/embryo.sort.sam --ts 10000 --min-mq 1 --mirna-ovary 8022261 --mirna-embryo 1933914 > piRNA-tileing.10kb.txt     
+python ~/dev/te-tools/ere/piRNA-tiler.py --ovary ../raw-smallRNAmappings/ovaries.sort.sam --embryo ../raw-smallRNAmappings/embryo.sort.sam --ts 1000 --min-mq 1 --mirna-ovary 8022261 --mirna-embryo 1933914 > piRNA-tileing.1kb.txt 
+python ~/dev/te-tools/ere/piRNA-tiler.py --ovary ../raw-smallRNAmappings/ovaries.sort.sam --embryo ../raw-smallRNAmappings/embryo.sort.sam --ts 5000 --min-mq 1 --mirna-ovary 8022261 --mirna-embryo 1933914 > piRNA-tileing.5kb.txt
+
+
+python ~/dev/te-tools/ere/piRNA-tiler.py --ovary ../raw-smallRNAmappings/ovaries.sort.sam --embryo ../raw-smallRNAmappings/embryo.sort.sam --ts 10000 --min-mq 1 --mirna-ovary pirna --mirna-embryo pirna > piRNA-tileing.10kb.pirnanorm.txt
+python ~/dev/te-tools/ere/piRNA-tiler.py --ovary ../raw-smallRNAmappings/ovaries.sort.sam --embryo ../raw-smallRNAmappings/embryo.sort.sam --ts 5000 --min-mq 1 --mirna-ovary pirna --mirna-embryo pirna > piRNA-tileing.5kb.pirnanorm.txt
+python ~/dev/te-tools/ere/piRNA-tiler.py --ovary ../raw-smallRNAmappings/ovaries.sort.sam --embryo ../raw-smallRNAmappings/embryo.sort.sam --ts 1000 --min-mq 1 --mirna-ovary pirna --mirna-embryo pirna > piRNA-tileing.1kb.pirnanorm.txt
+
+python ~/dev/te-tools/ere/piRNA-tiler.py --ovary ../raw-smallRNAmappings/ovaries.sort.sam --embryo ../raw-smallRNAmappings/embryo.sort.sam --ts 10000 --min-mq 0 --mirna-ovary pirna --mirna-embryo pirna > piRNA-tileing.10kb.pirnanorm.mq0.txt
+python ~/dev/te-tools/ere/piRNA-tiler.py --ovary ../raw-smallRNAmappings/ovaries.sort.sam --embryo ../raw-smallRNAmappings/embryo.sort.sam --ts 5000 --min-mq 0 --mirna-ovary pirna --mirna-embryo pirna > piRNA-tileing.5kb.pirnanorm.mq0.txt
+python ~/dev/te-tools/ere/piRNA-tiler.py --ovary ../raw-smallRNAmappings/ovaries.sort.sam --embryo ../raw-smallRNAmappings/embryo.sort.sam --ts 1000 --min-mq 0 --mirna-ovary pirna --mirna-embryo pirna > piRNA-tileing.1kb.pirnanorm.mq0.txt
+```
+
+Check difference mq0 vs mq1
+```{bash eval=FALSE}
+cat piRNA-tileing.1kb.pirnanorm.mq0.txt|awk '{print $5}'|awk '{l+=$1}END{print l}'
+18830450
+cat piRNA-tileing.1kb.pirnanorm.txt|awk '{print $5}'|awk '{l+=$1}END{print l}'
+12654280
+```
+Yes more reads in mq0 -> mq filtering works
+
+```
+### head -resulting file
+```{bash eval=FALSE}
+contig_41	10000	10999	1000	15	8/7	0	1.86979705597	0.0	0.125	0.0
+contig_41	13000	13999	1000	11	7/4	0	1.37118450771	0.0	0.428571428571	0.0
+contig_41	26000	26999	1000	111	45/66	6	13.8364982142	3.10251645109	0.318181818182	0.224226997545
+contig_41	27000	27999	1000	107	57/50	18	13.3378856659	9.30754935328	0.122807017544	0.69782794563
+contig_41	28000	28999	1000	74	0/74	37	9.22433214277	19.1321847817	1.0	2.07409972729
+contig_41	29000	29999	1000	11	7/4	0	1.37118450771	0.0	0.428571428571	0.0
+contig_48	1000	1999	1000	28	3/25	2	3.49028783781	1.03417215036	0.88	0.296299961041
+contig_48	2000	2999	1000	24	6/18	1	2.99167528955	0.517086075182	0.666666666667	0.172841643941
+contig_48	3000	3999	1000	49	6/43	1	6.10800371616	0.517086075182	0.860465116279	0.0846571317261
+contig_48	4000	4999	1000	28	7/21	2	3.49028783781	1.03417215036	0.666666666667	0.296299961041
+# contig, start, end, tilesize, raw-ovary-count, sense-antisense(ovary), raw-embryo-count,
+# last 4 columns
+# norm-ovary-count, norm-embryo-count, strand-bias, maternal-transmission-index
+#
+# sense bias:
+# tmp=float(toc[0])/float(toc[1]) # toc is a sorted list of sense/antisense raw counts
+#	bias=1.0-tmp
+#
+# maternal transmission:
+# mt=float(embryo)/float(ovary)
+# normalized-count-embryo / normalized-count-ovary
+```
+
+## histograms of tileing mq 1
+```{R}
+library(tidyverse)
+theme_set(theme_bw())
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-05-long-read/03-clustertiles/piRNA-tileing.5kb.pirnanorm.txt")
+print(str(h))
+
+
+names(h)<-c("chrm","start","end","size","rawovary","tmpraw","rawembryo","normovary","normembryo","strandbias","maternalrate")
+hfilter<-subset(h,rawovary>100)
+
+# normalized expression in ovary
+
+goexpr<-ggplot(hfilter,aes(x=normovary))+geom_histogram(color="black", fill="grey",binwidth=10)+xlim(0,250)
+plot(goexpr)
+
+
+gsb<-ggplot(hfilter,aes(x=strandbias))+geom_histogram(color="black", fill="grey",binwidth=0.1)
+plot(gsb)
+
+gmat<-ggplot(hfilter,aes(x=maternalrate))+geom_histogram(color="black", fill="grey",binwidth=0.1)+xlim(-0.1,2)
+plot(gmat)
+```
+
+
+## histograms of tileing mq 0
+```{R}
+library(tidyverse)
+theme_set(theme_bw())
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-05-long-read/03-clustertiles/piRNA-tileing.5kb.pirnanorm.mq0.txt")
+print(str(h))
+
+#contig_41	10000	10999	1000	15	8/7	0	1.86979705597	0.0	0.125	0.0
+#contig_41	13000	13999	1000	11	7/4	0	1.37118450771	0.0	0.428571428571	0.0
+#contig_41	26000	26999	1000	111	45/66	6	13.8364982142	3.10251645109	0.318181818182
+
+
+names(h)<-c("chrm","start","end","size","rawovary","tmpraw","rawembryo","normovary","normembryo","strandbias","maternalrate")
+hfilter<-subset(h,rawovary>100)
+
+# normalized expression in ovary
+
+goexpr<-ggplot(hfilter,aes(x=normovary))+geom_histogram(color="black", fill="grey",binwidth=10)+xlim(0,250)
+plot(goexpr)
+
+
+gsb<-ggplot(hfilter,aes(x=strandbias))+geom_histogram(color="black", fill="grey",binwidth=0.1)
+plot(gsb)
+
+gmat<-ggplot(hfilter,aes(x=maternalrate))+geom_histogram(color="black", fill="grey",binwidth=0.1)+xlim(-0.1,2)
+plot(gmat)
+```
+

@@ -1,0 +1,30 @@
+---
+title: "mapping-longread-smallRNA"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+Mapping for finding P-element insertions in piRNA clusters.
+Requires i) long-reads mapped to Dere ref.genome and ii) small RNAs mapped to Dere ref.genome
+
+# Mapping long-reads
+
+# small RNAs
+## File overview
+```{bash eval=FALSE}
+-rw-r--r--  1 rokofler  staff    72284063 Dec 22 15:22 dere_JBE-33_embryo_trimmed_clean_sf_sorted.bam
+-rw-r--r--  1 rokofler  staff  1314761968 Jan 21 13:32 dere_embryo_SRR5461082_trimmed_clean_sf_sorted.bam
+-rw-r--r--  2 rokofler  staff   836975874 Jun 24  2021 dere_naive_WF_clean_sf_sorted.bam
+-rw-r--r--  1 rokofler  staff   194822575 Dec 22 15:24 dere_naive_ovaries_R1_trim_clean_sf_sorted.bam
+-rw-r--r--  1 rokofler  staff   183978471 Dec 22 15:24 dere_naive_ovaries_R2_trim_clean_sf_sorted.bam
+-rw-r--r--  1 rokofler  staff   171100937 Dec 22 15:25 dere_naive_ovaries_R3_trim_clean_sf_sorted.bam
+```
+
+## mapping
+of the *ovaries_R[123]_* see the small RNA folder
+
+

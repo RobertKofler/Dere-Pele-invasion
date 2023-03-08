@@ -1,0 +1,186 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Rename
+## ovaries
+```{bash eval=FALSE}
+of="/Volumes/Temp/Robert/2022-divya-ere/01-RNAseq/rawreads-divya/"
+ifw="/Volumes/Temp/Robert/2022-divya-ere/01-RNAseq/rawreads-divya/WF"
+ifo="/Volumes/Temp/Robert/2022-divya-ere/01-RNAseq/rawreads-divya/ovaries"
+
+#### OVARIES 12
+ln $ifo/210218_A00902_B_L002_AMLZ-123_R1.fastq.gz $of/ovary_R1G35_R1.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-123_R2.fastq.gz $of/ovary_R1G35_R2.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-124_R1.fastq.gz $of/ovary_R2G35_R1.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-124_R2.fastq.gz $of/ovary_R2G35_R2.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-125_R1.fastq.gz $of/ovary_R4G35_R1.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-125_R2.fastq.gz $of/ovary_R4G35_R2.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-126_R1.fastq.gz $of/ovary_R1G10_R1.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-126_R2.fastq.gz $of/ovary_R1G10_R2.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-127_R1.fastq.gz $of/ovary_R2G10_R1.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-127_R2.fastq.gz $of/ovary_R2G10_R2.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-128_R1.fastq.gz $of/ovary_R4G10_R1.fastq.gz
+ln $ifo/210218_A00902_B_L002_AMLZ-128_R2.fastq.gz $of/ovary_R4G10_R2.fastq.gz
+
+####  WHOLE FLIES 36 = 48 files
+ln $ifw/201216_A00902_B_L001_AMLZ-104_R1.fastq.gz $of/wf_R1G5_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-104_R2.fastq.gz $of/wf_R1G5_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-105_R1.fastq.gz $of/wf_R2G5_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-105_R2.fastq.gz $of/wf_R2G5_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-106_R1.fastq.gz $of/wf_R4G5_R1.fastq.gz
+
+ln $ifw/201216_A00902_B_L001_AMLZ-106_R2.fastq.gz $of/wf_R4G5_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-107_R1.fastq.gz $of/wf_R1G15_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-107_R2.fastq.gz $of/wf_R1G15_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-108_R1.fastq.gz $of/wf_R2G15_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-108_R2.fastq.gz $of/wf_R2G15_R2.fastq.gz
+
+ln $ifw/201216_A00902_B_L001_AMLZ-109_R1.fastq.gz $of/wf_R4G15_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-109_R2.fastq.gz $of/wf_R4G15_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-110_R1.fastq.gz $of/wf_R1G20_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-110_R2.fastq.gz $of/wf_R1G20_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-111_R1.fastq.gz $of/wf_R2G20_R1.fastq.gz
+
+ln $ifw/201216_A00902_B_L001_AMLZ-111_R2.fastq.gz $of/wf_R2G20_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-112_R1.fastq.gz $of/wf_R4G20_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-112_R2.fastq.gz $of/wf_R4G20_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-113_R1.fastq.gz $of/wf_R1G30_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-113_R2.fastq.gz $of/wf_R1G30_R2.fastq.gz
+
+ln $ifw/201216_A00902_B_L001_AMLZ-114_R1.fastq.gz $of/wf_R2G30_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-114_R2.fastq.gz $of/wf_R2G30_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-115_R1.fastq.gz $of/wf_R4G30_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-115_R2.fastq.gz $of/wf_R4G30_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-116_R1.fastq.gz $of/wf_R1G40_R1.fastq.gz
+
+ln $ifw/201216_A00902_B_L001_AMLZ-116_R2.fastq.gz $of/wf_R1G40_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-117_R1.fastq.gz $of/wf_R2G40_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-117_R2.fastq.gz $of/wf_R2G40_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-118_R1.fastq.gz $of/wf_R4G40_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-118_R2.fastq.gz $of/wf_R4G40_R2.fastq.gz
+
+ln $ifw/201216_A00902_B_L001_AMLZ-120_R1.fastq.gz $of/wf_naive1_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-120_R2.fastq.gz $of/wf_naive1_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-121_R1.fastq.gz $of/wf_naive2_R1.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-121_R2.fastq.gz $of/wf_naive2_R2.fastq.gz
+ln $ifw/201216_A00902_B_L001_AMLZ-122_R1.fastq.gz $of/wf_naive3_R1.fastq.gz
+
+ln $ifw/201216_A00902_B_L001_AMLZ-122_R2.fastq.gz $of/wf_naive3_R2.fastq.gz
+```
+
+# Reference
+
+Consists of two parts: Flybase: dere_r1.3_FB2014_03
+and the TE sequences of Dmel TEs
+
+# Mapping: 
+## BWA mem
+conducted on vetgrid06
+```{bash eval=FALSE}
+ref="/Volumes/Temp/Robert/2022-divya-ere/01-RNAseq/ref/dere_te_mRNA.fasta"
+if="/Volumes/Temp/Robert/2022-divya-ere/01-RNAseq/rawreads-divya"
+of="/Volumes/Temp/Robert/2022-divya-ere/01-RNAseq/map-bwamem"
+
+# ovary
+bwa mem -t 12 $ref $if/ovary_R1G10_R1.fastq.gz $if/ovary_R1G10_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/ovary_R1G10.sort.bam
+bwa mem -t 12 $ref $if/ovary_R2G10_R1.fastq.gz $if/ovary_R2G10_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/ovary_R2G10.sort.bam
+bwa mem -t 12 $ref $if/ovary_R4G10_R1.fastq.gz $if/ovary_R4G10_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/ovary_R4G10.sort.bam
+bwa mem -t 12 $ref $if/ovary_R1G35_R1.fastq.gz $if/ovary_R1G35_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/ovary_R1G35.sort.bam
+bwa mem -t 12 $ref $if/ovary_R2G35_R1.fastq.gz $if/ovary_R2G35_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/ovary_R2G35.sort.bam
+bwa mem -t 12 $ref $if/ovary_R4G35_R1.fastq.gz $if/ovary_R4G35_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/ovary_R4G35.sort.bam
+
+# wf
+bwa mem -t 12 $ref $if/wf_R1G5_R1.fastq.gz $if/wf_R1G5_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R1G5.sort.bam
+bwa mem -t 12 $ref $if/wf_R2G5_R1.fastq.gz $if/wf_R2G5_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R2G5.sort.bam
+bwa mem -t 12 $ref $if/wf_R4G5_R1.fastq.gz $if/wf_R4G5_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R4G5.sort.bam
+
+bwa mem -t 12 $ref $if/wf_R1G15_R1.fastq.gz $if/wf_R1G15_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R1G15.sort.bam
+bwa mem -t 12 $ref $if/wf_R2G15_R1.fastq.gz $if/wf_R2G15_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R2G15.sort.bam
+bwa mem -t 12 $ref $if/wf_R4G15_R1.fastq.gz $if/wf_R4G15_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R4G15.sort.bam
+
+bwa mem -t 12 $ref $if/wf_R1G20_R1.fastq.gz $if/wf_R1G20_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R1G20.sort.bam
+bwa mem -t 12 $ref $if/wf_R2G20_R1.fastq.gz $if/wf_R2G20_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R2G20.sort.bam
+bwa mem -t 12 $ref $if/wf_R4G20_R1.fastq.gz $if/wf_R4G20_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R4G20.sort.bam
+
+bwa mem -t 12 $ref $if/wf_R1G30_R1.fastq.gz $if/wf_R1G30_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R1G30.sort.bam
+bwa mem -t 12 $ref $if/wf_R2G30_R1.fastq.gz $if/wf_R2G30_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R2G30.sort.bam
+bwa mem -t 12 $ref $if/wf_R4G30_R1.fastq.gz $if/wf_R4G30_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R4G30.sort.bam
+
+bwa mem -t 12 $ref $if/wf_R1G40_R1.fastq.gz $if/wf_R1G40_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R1G40.sort.bam
+bwa mem -t 12 $ref $if/wf_R2G40_R1.fastq.gz $if/wf_R2G40_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R2G40.sort.bam
+bwa mem -t 12 $ref $if/wf_R4G40_R1.fastq.gz $if/wf_R4G40_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_R4G40.sort.bam
+
+bwa mem -t 12 $ref $if/wf_naive1_R1.fastq.gz $if/wf_naive1_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_naive1.sort.bam
+bwa mem -t 12 $ref $if/wf_naive2_R1.fastq.gz $if/wf_naive2_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_naive2.sort.bam
+bwa mem -t 12 $ref $if/wf_naive3_R1.fastq.gz $if/wf_naive3_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/wf_naive3.sort.bam
+```
+
+# GSNAP
+
+##transcriptome
+```{bash eval=FALSE}
+# First build database
+gmap_build -D . -d ere-transcriptome transcriptome-raw/dere_te_mRNA.fasta
+
+# next run the following script
+refdir="/Volumes/Temp/Robert/2022-divya-ere/01-RNAseq/ref/gsnap"
+refname="ere-transcriptome"
+
+if="/Volumes/Temp/Robert/2022-divya-ere/01-RNAseq/rawreads-divya"
+of="/Volumes/Temp/Robert/2022-divya-ere/01-RNAseq/map-gsnap-transcriptome"
+
+
+# gsnap -D ../ref/gsnap -d ere-transcriptome -t 12 -N 1 --format=sam --gunzip ../rawreads-divya/ovary_R1G10_R1.fastq.gz ../rawreads-divya/ovary_R1G10_R2.fastq.gz
+# gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip ../rawreads-divya/ovary_R1G10_R1.fastq.gz ../rawreads-divya/ovary_R1G10_R2.fastq.gz
+# ovary
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/ovary_R1G10_R1.fastq.gz $if/ovary_R1G10_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_ovary_R1G10.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/ovary_R2G10_R1.fastq.gz $if/ovary_R2G10_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_ovary_R2G10.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/ovary_R4G10_R1.fastq.gz $if/ovary_R4G10_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_ovary_R4G10.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/ovary_R1G35_R1.fastq.gz $if/ovary_R1G35_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_ovary_R1G35.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/ovary_R2G35_R1.fastq.gz $if/ovary_R2G35_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_ovary_R2G35.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/ovary_R4G35_R1.fastq.gz $if/ovary_R4G35_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_ovary_R4G35.sort.bam
+
+# wf
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R1G5_R1.fastq.gz $if/wf_R1G5_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R1G5.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R2G5_R1.fastq.gz $if/wf_R2G5_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R2G5.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R4G5_R1.fastq.gz $if/wf_R4G5_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R4G5.sort.bam
+
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R1G15_R1.fastq.gz $if/wf_R1G15_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R1G15.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R2G15_R1.fastq.gz $if/wf_R2G15_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R2G15.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R4G15_R1.fastq.gz $if/wf_R4G15_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R4G15.sort.bam
+
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R1G20_R1.fastq.gz $if/wf_R1G20_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R1G20.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R2G20_R1.fastq.gz $if/wf_R2G20_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R2G20.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R4G20_R1.fastq.gz $if/wf_R4G20_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R4G20.sort.bam
+
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R1G30_R1.fastq.gz $if/wf_R1G30_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R1G30.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R2G30_R1.fastq.gz $if/wf_R2G30_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R2G30.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R4G30_R1.fastq.gz $if/wf_R4G30_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R4G30.sort.bam
+
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R1G40_R1.fastq.gz $if/wf_R1G40_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R1G40.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R2G40_R1.fastq.gz $if/wf_R2G40_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R2G40.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_R4G40_R1.fastq.gz $if/wf_R4G40_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_R4G40.sort.bam
+
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_naive1_R1.fastq.gz $if/wf_naive1_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_naive1.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_naive2_R1.fastq.gz $if/wf_naive2_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_naive2.sort.bam
+gsnap -D $refdir -d $refname -t 12 -N 1 --format=sam --gunzip $if/wf_naive3_R1.fastq.gz $if/wf_naive3_R2.fastq.gz | samtools sort -m 2G --output-fmt BAM --threads 2 -o $of/gt_wf_naive3.sort.bam
+```
+
+## genome
+```{bash eval=FALSE}
+# build the referenc
+gmap_build -D . -d ere-genome raw-genome/dere_longread.fasta 
+
+
+```
+- provide paired end stranded info
+
+## Kalisto
+
+
+

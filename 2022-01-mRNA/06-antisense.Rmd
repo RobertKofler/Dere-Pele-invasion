@@ -1,0 +1,79 @@
+---
+title: "antisense"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Antisense expression level in early generations
+
+```{R}
+library(ggplot2)
+library(tidyverse)
+#library(plyr)
+library(RColorBrewer)
+
+theme_set(theme_bw())
+
+
+
+#genes<-c("PPI251","FBtr0137012_mRNA","FBtr0140282_mRNA","FBtr0141095_mRNA","FBtr0142660_mRNA","FBtr0140302_mRNA",
+#         "FBtr0142342_mRNA","FBtr0143902_mRNA","FBtr0130551_mRNA","FBtr0145198_mRNA","FBtr0130342_mRNA","FBtr0135961_mRNA",
+#         "FBtr0135197_mRNA","FBtr0130390_mRNA","FBtr0141576_mRNA","FBtr0139614_mRNA","FBtr0130391_mRNA",
+#         "FBtr0141238_mRNA","FBtr0141090_mRNA","FBtr0132023_mRNA","FBtr0143034_mRNA")
+#sc<-c("PPI251","spnE","cuff","Dcr2","Hen1","Hen1","krimp","loqs","r2d2","vas",
+
+
+h<-read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/03-all-expressionlevel/raw/expression-forr.forr",delim="\t",col_names=FALSE,comment="#")
+# R1	G10	ov	FBtr0144693_mRNA	1722.0	3.0	1467.0	23.9457596422	0.041717351293	23.9874769935
+# R1	G10	ov	FBtr0133093_mRNA	3.0	0.0	285.0	0.214734576655	0.0	0.214734576655
+
+names(h)<-c("replicate","generation","tissue","gene","rawse","rawase","genlen","se","ase","total")
+h<-subset(h,generation!="naive")
+h$category<-"TE"
+h[h$gene=="PPI251",]$category<-"Pele"
+h[grepl("_mRNA",h$gene),]$category<-"gene"
+h<-subset(h,category!="TE" & generation %in% c("G5","G10","G15","G20"))
+
+h$generation <- factor(h$generation, levels=c("G5", "G10", "G15", "G20"))
+h$category  <- factor(h$category, levels=c("Pele","gene"))
+
+e<-h %>% group_by(replicate,generation,category) %>% dplyr::summarise(sesum=sum(se),asesum=sum(ase),totsum=sum(total))
+e$pcase<-100*e$asesum/e$totsum
+
+p<-ggplot(data=e,aes(x=category,y=pcase))+geom_bar(stat="identity")+facet_grid(generation~replicate)+ylab("antisense reads [%]")
+plot(p)
+
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/03-all-expressionlevel/graphs/antisense.pdf",width=6,height=6)
+plot(p)
+dev.off()
+
+# Finally check if significant
+wilcox.test(subset(e,category=="gene")$pcase,subset(e,category=="Pele")$pcase)
+```
+
+## Antisense levels for P-element and genes
+```{R}
+h<-read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/03-all-expressionlevel/raw/expression-forr.forr",delim="\t",col_names=FALSE,comment="#")
+# R1	G10	ov	FBtr0144693_mRNA	1722.0	3.0	1467.0	23.9457596422	0.041717351293	23.9874769935
+# R1	G10	ov	FBtr0133093_mRNA	3.0	0.0	285.0	0.214734576655	0.0	0.214734576655
+
+names(h)<-c("replicate","generation","tissue","gene","rawse","rawase","genlen","se","ase","total")
+h<-subset(h,generation!="naive")
+h$category<-"TE"
+h[h$gene=="PPI251",]$category<-"Pele"
+h[grepl("_mRNA",h$gene),]$category<-"gene"
+h<-subset(h,category!="TE")
+
+
+h$category  <- factor(h$category, levels=c("Pele","gene"))
+
+e<-h %>% group_by(replicate,generation,category) %>% dplyr::summarise(sesum=sum(se),asesum=sum(ase),totsum=sum(total))
+e$pcase<-100*e$asesum/e$totsum
+
+ex<-h %>% group_by(category) %>% dplyr::summarise(sesum=sum(se),asesum=sum(ase),totsum=sum(total))
+ex$pcase<-100*ex$asesum/ex$totsum
+print(ex)
+```

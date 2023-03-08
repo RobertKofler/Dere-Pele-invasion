@@ -1,0 +1,195 @@
+---
+title: "lr-preprocess"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+
+Preprocessing the long-read data, i.e. collecting in a single fastq and mapping
+
+
+
+# Long Reads
+
+## Collect data
+
+* R1: G20_r1
+* R2: G51_r1, G51_r2, G21_r1, G21_r2, G21_r3, G26_r1, G18_r1; complete
+* R4: G51_r1, G25_r1; complete
+
+```{bash eval=FALSE}
+for i in *.fastq.gz; do gzip -cd $i ; done |gzip -c > /home/vetlinux04/Robert/2021-Dere-Divya/raw/Derecta_R2_G51_run1.fastq.gz &
+for i in *.fastq.gz; do gzip -cd $i ; done |gzip -c > /home/vetlinux04/Robert/2021-Dere-Divya/raw/Derecta_R2_G51_run2.fastq.gz &
+for i in fastq_runid_299ab1257f96a55ecf0a3810db9678516ac7fc90_* ; do gzip -cd $i; done | gzip -c > ../../Derecta_R2_G21_run1.fastq.gz 
+for i in fastq_runid_fd02a13aa1b34df3810dd79107f02f8e82fd6d22_* ; do gzip -cd $i; done | gzip -c > /home/vetlinux04/Robert/2021-Dere-Divya/raw/Derecta_R2_G21_run2.fastq.gz 
+for i in fastq_runid_97115be473a10a4316d012ebf74383ea269abf97_ ; do gzip -cd $i; done | gzip -c > /home/vetlinux04/Robert/2021-Dere-Divya/raw/Derecta_R2_G26.fastq.gz 
+for i in fastq_runid_97115be473a10a4316d012ebf74383ea269abf97_* ; do gzip -cd $i; done | gzip -c > /home/vetlinux04/Robert/2021-Dere-Divya/raw/Derecta_R2_G26.fastq.gz 
+for i in *.fastq.gz; do gzip -cd $i ; done |gzip -c > /home/vetlinux04/Robert/2021-Dere-Divya/raw/Derecta_R4_G51.fastq.gz &
+for i in *gz;do  gzip -cd $i; done|gzip -c > /home/vetlinux04/Robert/2021-Dere-Divya/raw/Derecta_R2_G18_r1.fastq.gz
+for i in *.fastq.gz; do gzip -cd $i ; done |gzip -c > /home/vetlinux04/Robert/2021-Dere-Divya/raw/Derecta_R2_G21_r3.fastq.gz &
+for i in *.fastq.gz; do gzip -cd $i ; done |gzip -c > /home/vetlinux04/Robert/2021-Dere-Divya/raw/Derecta_R4_G25_r1.fastq.gz &
+for i in *.fastq.gz; do gzip -cd $i ; done |gzip -c > /home/vetlinux04/Robert/2021-Dere-Divya/raw/Derecta_R1_G20_r1.fastq.gz &
+```
+
+## align reads
+
+```{bash eval=FALSE}
+refg="/home/vetlinux04/Robert/2021-Dere-Divya/ref/Dere_longread_pele/dere_pele.fasta"
+ip="/home/vetlinux04/Robert/2021-Dere-Divya/raw"
+op="/home/vetlinux04/Robert/2021-Dere-Divya/map"
+
+minimap2 -x map-ont $refg -Y -c  -t 10 $ip/Derecta_R1_G20_r1.fastq.gz > $op/Derecta_R1_G20_r1.paf  &
+minimap2 -x map-ont $refg -a  -t 10 $ip/Derecta_R1_G20_r1.fastq.gz  > $op/Derecta_R1_G20_r1.sam 
+
+minimap2 -x map-ont $refg -Y -c  -t 10 $ip/Derecta_R2_G18_r1.fastq.gz > $op/Derecta_R2_G18_r1.paf  &
+minimap2 -x map-ont $refg -a  -t 10 $ip/Derecta_R2_G18_r1.fastq.gz  > $op/Derecta_R2_G18_r1.sam 
+
+minimap2 -x map-ont $refg -Y -c  -t 10 $ip/Derecta_R2_G21_r1.fastq.gz > $op/Derecta_R2_G21_r1.paf  &
+minimap2 -x map-ont $refg -a  -t 10 $ip/Derecta_R2_G21_r1.fastq.gz  > $op/Derecta_R2_G21_r1.sam 
+
+minimap2 -x map-ont $refg -Y -c  -t 10 $ip/Derecta_R2_G21_r2.fastq.gz > $op/Derecta_R2_G21_r2.paf  &
+minimap2 -x map-ont $refg -a  -t 10 $ip/Derecta_R2_G21_r2.fastq.gz  > $op/Derecta_R2_G21_r2.sam 
+
+minimap2 -x map-ont $refg -Y -c  -t 10 $ip/Derecta_R2_G21_r3.fastq.gz > $op/Derecta_R2_G21_r3.paf  &
+minimap2 -x map-ont $refg -a  -t 10 $ip/Derecta_R2_G21_r3.fastq.gz  > $op/Derecta_R2_G21_r3.sam 
+
+minimap2 -x map-ont $refg -Y -c  -t 10 $ip/Derecta_R2_G26_r1.fastq.gz > $op/Derecta_R2_G26_r1.paf  &
+minimap2 -x map-ont $refg -a  -t 10 $ip/Derecta_R2_G26_r1.fastq.gz  > $op/Derecta_R2_G26_r1.sam 
+
+minimap2 -x map-ont $refg -Y -c  -t 10 $ip/Derecta_R2_G51_r1.fastq.gz > $op/Derecta_R2_G51_r1.paf  &
+minimap2 -x map-ont $refg -a  -t 10 $ip/Derecta_R2_G51_r1.fastq.gz  > $op/Derecta_R2_G51_r1.sam 
+
+minimap2 -x map-ont $refg -Y -c  -t 10 $ip/Derecta_R2_G51_r2.fastq.gz > $op/Derecta_R2_G51_r2.paf  &
+minimap2 -x map-ont $refg -a  -t 10 $ip/Derecta_R2_G51_r2.fastq.gz  > $op/Derecta_R2_G51_r2.sam 
+
+minimap2 -x map-ont $refg -Y -c  -t 10 $ip/Derecta_R4_G25_r1.fastq.gz > $op/Derecta_R4_G25_r1.paf  &
+minimap2 -x map-ont $refg -a  -t 10 $ip/Derecta_R4_G25_r1.fastq.gz  > $op/Derecta_R4_G25_r1.sam 
+
+minimap2 -x map-ont $refg -Y -c  -t 10 $ip/Derecta_R4_G51_r1.fastq.gz > $op/Derecta_R4_G51_r1.paf  &
+minimap2 -x map-ont $refg -a  -t 10 $ip/Derecta_R4_G51_r1.fastq.gz  > $op/Derecta_R4_G51_r1.sam 
+
+```
+# Reference genome
+
+### Reference for mapping with minimap2
+
+path: /home/vetlinux04/Robert/2021-Dere-Divya/ref/Dere_longread_pele/dere_pele.fasta.fai
+```{bash eval=FALSE}
+contig_1        2031    10      80      81
+contig_2        233     2077    80      81
+contig_3        124454  2323    80      81
+contig_4        11738   128343  80      81
+contig_5        22924   140238  80      81
+contig_6        114994  163459  80      81
+...
+...
+contig_507	38077	84474405	80	81
+contig_508	20389455	84512970	80	81
+contig_509	6991	105157306	80	81
+contig_510	1389	105164397	80	81
+contig_511	23572	105165816	80	81
+contig_512	1721256	105189695	80	81
+contig_513	29209457	106932479	80	81
+contig_514	128194	136507067	80	81
+contig_515	713665	136636876	80	81
+PPI251	2907	137359470	80	81
+#
+[vetlinux04@pgnsrv042 Dere_longread_pele]$ wc dere_pele.fasta.fai 
+  500  2500 15466 dere_pele.fasta.fai
+
+[vetlinux04@pgnsrv042 Dere_longread_pele]$ cat dere_pele.fasta.fai |awk '{s+=$2}END{print s}'
+135660520
+```
+
+### Fai info
+```{bash eval=FALSE}
+# https://www.biostars.org/p/98885/
+Column 1: The contig name. In your FASTA file, this is preceeded by '>'
+
+Column 2: The number of bases in the contig
+
+Column 3: The byte index of the file where the contig sequence begins. (Notice how it constantly increases by roughly the amount in column 2?)
+
+Column 4: bases per line in the FASTA file
+
+Column 5: bytes per line in the FASTA file
+```
+
+### Reference of Divya used for PopTE2
+```{bash eval=FALSE}
+contig_1	2031	63	80	81
+contig_2	233	2183	80	81
+contig_3	124454	2482	80	81
+contig_4	11738	128555	80	81
+contig_5	22924	140503	80	81
+contig_6	114994	163777	80	81
+...
+...
+contig_511	23572	105192051	80	81
+contig_512	1721256	105215983	80	81
+contig_513	29209457	106958820	80	81
+contig_514	128194	136533461	80	81
+contig_515	713665	136663323	80	81
+PPI251	2907	137385917	2907	2908
+
+wc dere_longread_popte2.fasta.fai
+500    2500   15470 dere_longread_popte2.fasta.fai
+cat dere_longread_popte2.fasta.fai |awk '{s+=$2}END{print s}'
+135660520
+```
+
+# Find P-element insertions in all paf-files
+```{bash eval=FALSE}
+for i in *.paf; do n=${i%.paf} ; python ~/dev/te-tools/longread/Pele-insertion-finder.py --paf $i > ../pele-insertions/$n.pele  ; done
+```
+
+Resulting in the following files and number of insertions 
+```{bash eval=FALSE}
+[0,6910]rokofler%wc -l *
+    1107 Derecta_R1_G20_r1.pele
+     736 Derecta_R2_G18_r1.pele
+    1502 Derecta_R2_G21_r1.pele
+     921 Derecta_R2_G21_r2.pele
+     526 Derecta_R2_G21_r3.pele
+    1432 Derecta_R2_G26_r1.pele
+    1814 Derecta_R2_G51_r1.pele
+   20976 Derecta_R2_G51_r2.pele
+    1787 Derecta_R4_G25_r1.pele
+    2665 Derecta_R4_G51_r1.pele
+```
+
+
+# piRNA cluster data
+## Mapping to whole genome
+```{bahs eval=FALSE}
+#!/usr/bash/bin
+
+
+for i in Results/dere/sf/*naive_WF*.fastq
+
+        do
+                date
+
+                j=`basename $i`
+                j=${j%.sizefiltered.fastq}
+                j=${j%.sizefiltered}
+
+ 
+                novoalign -d ref_resource/ere/dere_longread.nvi -f $i -F STDFQ -o SAM -o FullNW -r RANDOM | samtools view -@ 8 -Sb - | samtools sort -o  Results/dere/sorted_naive_WF/${j}_trim_clean_sf_sorted.bam
+        
+
+                date
+        done
+```
+
+
+## Cluster identification
+
+```{bash eval=FALSE}
+cat cluster-all-ere.mq1.th10.bin500.txt|awk 'BEGIN{OFS="\t"}{print $2,$3,$4,$5}' > cluster-all-ere.mq1.th10.bin500.bed
+```
+

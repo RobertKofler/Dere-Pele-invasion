@@ -1,0 +1,57 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+# Data supplementary table xx
+
+
+# Correlation piRNAs vs P-element expression or splicing
+
+```{r}
+library(tidyverse)
+t<-read_delim("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-08-correlation/raw/forr.txt",delim="\t",col_names=FALSE,comment="#")
+names(t)<-c("replicate","generation","piRNAs","tes","expression","IVS3","IVS2","IVS1")
+t$norm_expr<-t$expression/t$tes
+t$norm_ivs3<-t$IVS3/t$tes
+t$norm_ivs2<-t$IVS2/t$tes
+t$norm_ivs1<-t$IVS1/t$tes
+t$threshold<-t$piRNAs>20000
+
+lmivs1p<-lm(t$IVS1~t$tes+t$piRNAs)
+lmivs2p<-lm(t$IVS2~t$tes+t$piRNAs)
+lmivs3p<-lm(t$IVS3~t$tes+t$piRNAs)
+lmexpp<-lm(t$expression~t$tes+t$piRNAs)
+
+lmivs1t<-lm(t$IVS1~t$tes+t$threshold)
+lmivs2t<-lm(t$IVS2~t$tes+t$threshold)
+lmivs3t<-lm(t$IVS3~t$tes+t$threshold)
+lmexpt<-lm(t$expression~t$tes+t$threshold)
+
+lmivs1e<-lm(t$IVS1~t$tes)
+lmivs2e<-lm(t$IVS2~t$tes)
+lmivs3e<-lm(t$IVS3~t$tes)
+lmexpe<-lm(t$expression~t$tes)
+```
+
+## Compare models; just TE copy number vs TE copy number and piRNAs
+info about model comparisions https://bookdown.org/ndphillips/YaRrr/comparing-regression-models-with-anova.html
+
+
+```{R}
+anova(lmexpe,lmexpp)
+anova(lmivs1e,lmivs1p)
+anova(lmivs2e,lmivs2p)
+anova(lmivs3e,lmivs3p)
+```
+
+
+## Compare models; just TE copy number vs TE copy number and piRNA threshold (20k)
+
+```{R}
+anova(lmexpe,lmexpt)
+anova(lmivs1e,lmivs1t)
+anova(lmivs2e,lmivs2t)
+anova(lmivs3e,lmivs3t)
+```

@@ -1,0 +1,101 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+# Visualization Quasimodo
+
+```{r}
+library(ggplot2)
+theme_set(theme_bw())
+
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/raw/forr.txt")
+names(h)<-c("rep","time","fam","strand","pos","pps")
+h$time<-as.factor(h$time)
+h$rep<-as.factor(h$rep)
+h<-subset(h,strand=="s" & fam=="QUASIMODO")
+ 
+g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(time~rep)+xlab("position")+
+  scale_y_continuous(breaks=c(0.0,0.4,0.8))+
+  ylab("ping-pong signature")
+plot(g)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/graphs/ere-pingpong-quasimodo.pdf",width=4,height=4)
+ 
+plot(g)
+dev.off()
+```
+
+## Visualization Quasimodo -generation 35
+
+```{r}
+library(ggplot2)
+theme_set(theme_bw())
+
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/raw/forr.txt")
+names(h)<-c("rep","time","fam","strand","pos","pps")
+h$time<-as.factor(h$time)
+h$rep<-as.factor(h$rep)
+h<-subset(h,strand=="s" & fam=="QUASIMODO" & time==35)
+ 
+g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(time~rep)+xlab("position")+
+  scale_y_continuous(breaks=c(0.0,0.4,0.8))+
+  ylab("ping-pong signature")
+plot(g)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/graphs/ere-pingpong-quasimodo-g35.pdf",width=7,height=2.5)
+ 
+plot(g)
+dev.off()
+```
+
+# Visualization BS
+
+```{r}
+library(ggplot2)
+theme_set(theme_bw())
+
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/raw/forr.txt")
+names(h)<-c("rep","time","fam","strand","pos","pps")
+h$time<-as.factor(h$time)
+h$rep<-as.factor(h$rep)
+h<-subset(h,strand=="s" & fam=="BS")
+ 
+g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(time~rep)+
+  scale_y_continuous(breaks=c(0.0,0.3,0.6))+
+  xlab("position")+ylab("ping-pong signature")
+plot(g)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/graphs/ere-pingpong-bs.pdf",width=4,height=4)
+ 
+plot(g)
+dev.off()
+```
+
+## Visualization BS - gen 35
+
+```{r}
+library(ggplot2)
+theme_set(theme_bw())
+
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/raw/forr.txt")
+names(h)<-c("rep","time","fam","strand","pos","pps")
+h$time<-as.factor(h$time)
+h$rep<-as.factor(h$rep)
+h<-subset(h,strand=="s" & fam=="BS" & time==35)
+ 
+g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(time~rep)+
+  scale_y_continuous(breaks=c(0.0,0.3,0.6))+
+  xlab("position")+ylab("ping-pong signature")
+plot(g)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/graphs/ere-pingpong-bs-g35.pdf",width=7,height=2.5)
+ 
+plot(g)
+dev.off()
+```
+
+
+

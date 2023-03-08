@@ -1,0 +1,150 @@
+---
+title: "02-EP-vs-FL"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+Comparing the population frequency of EP-elements and full-length P-element insertions
+
+
+
+# Steps
+
+## start data
+
+Start with the P-element insertions from long-reads (see before), and the estimates of the population frequency of P-element insertions using PopTE2 (illumina short reads) but with the minimum coverage of 10.
+
+## Check if EP or FL
+Only consider complete P-element insertions (query start at position 0 and end at position 2907).
+Than check if the insertion is FL (full-length) if there are no internal deletions or if the insertion is EP
+
+```{bash eval=FALSE}
+for i in *.pele; do n=${i%.pele}; python ~/dev/te-tools/longread/filter-FL-EP.py --pele $i > ../01-EP-vs-KP/rawepvsfl/$n.epvsfl; done
+```
+
+giving the following count of EP and FL (it should not be present in replicates 1 and 4)
+```{bash eval=FALSE}
+[0,6938]rokofler%for i in *.epvsfl; do echo $i ;cat $i|cut -f 3|sort |uniq -c;done
+Derecta_R1_G20_r1.epvsfl
+ 175 FL
+Derecta_R2_G18_r1.epvsfl
+   2 EP
+ 127 FL
+Derecta_R2_G21_r1.epvsfl
+  19 EP
+ 246 FL
+Derecta_R2_G21_r2.epvsfl
+  18 EP
+ 106 FL
+Derecta_R2_G21_r3.epvsfl
+  25 EP
+  87 FL
+Derecta_R2_G26_r1.epvsfl
+  54 EP
+ 224 FL
+Derecta_R2_G51_r1.epvsfl
+ 163 EP
+ 226 FL
+Derecta_R2_G51_r2.epvsfl
+1887 EP
+2501 FL
+Derecta_R4_G25_r1.epvsfl
+ 312 FL
+Derecta_R4_G51_r1.epvsfl
+ 419 FL
+```
+
+## link relevant PopTE2 frequency estimates (R2) to analysis folder
+```{bash eval=FALSE}
+[0,6951]rokofler%ln pairup-mincov10/GGCTAC_ere_R2G20_trimmed.txt ../01-EP-vs-KP/popte2/R2G20.pt2
+[0,6958]rokofler%ln pairup-mincov10/CAGGCG_ere_R2G34_trimmed.txt ../01-EP-vs-KP/popte2/R2G34.pt2
+[0,6959]rokofler%ln pairup-mincov10/CAGGCG_ere_R2G40_trimmed.txt ../01-EP-vs-KP/popte2/R2G40.pt2
+[0,6960]rokofler%ln pairup-mincov10/CAGGCG_ere_R2G48_trimmed.txt ../01-EP-vs-KP/popte2/R2G48.pt2
+```
+## crosslink popte2 and Long-reads
+```{bash eval=FALSE}
+[0,6957]rokofler%python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G40.pt2 --flep rawepvsfl/Derecta_R2_G51_r2.epvsfl > crosslinks-single/lr51r2-pt40.txt
+[0,6969]rokofler%python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G40.pt2 --flep rawepvsfl/Derecta_R2_G51_r1.epvsfl > crosslinks-single/lr51r1-pt40.txt 
+[0,6970]rokofler%python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G48.pt2 --flep rawepvsfl/Derecta_R2_G51_r1.epvsfl > crosslinks-single/lr51r1-pt48.txt 
+[0,6971]rokofler%python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G48.pt2 --flep rawepvsfl/Derecta_R2_G51_r2.epvsfl > crosslinks-single/lr51r2-pt48.txt
+[0,6975]rokofler%python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G34.pt2 --flep rawepvsfl/Derecta_R2_G26_r1.epvsfl > crosslinks-single/lr26r1-pt34.txt
+[0,6976]rokofler%python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G20.pt2 --flep rawepvsfl/Derecta_R2_G26_r1.epvsfl > crosslinks-single/lr26r1-pt20.txt
+[0,6977]rokofler%python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G20.pt2 --flep rawepvsfl/Derecta_R2_G21_r1.epvsfl > crosslinks-single/lr21r1-pt20.txt
+[0,6978]rokofler%python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G20.pt2 --flep rawepvsfl/Derecta_R2_G21_r2.epvsfl > crosslinks-single/lr21r2-pt20.txt
+[0,6979]rokofler%python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G20.pt2 --flep rawepvsfl/Derecta_R2_G21_r3.epvsfl > crosslinks-single/lr21r3-pt20.txt
+[0,6980]rokofler%python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G20.pt2 --flep rawepvsfl/Derecta_R2_G18_r1.epvsfl > crosslinks-single/lr18r1-pt20.txt
+```
+
+# merge
+
+```{bash eval=FALSE}
+[0,7014]rokofler%cat Derecta_R2_G21_* > merge/Derecta_R2_G21_r123.epvsfl
+[0,7015]rokofler%cat Derecta_R2_G51_* > merge/Derecta_R2_G51_r12.epvsfl
+[0,7037]rokofler%cat Derecta_R2_G* > merge/merge_all.epvsfl
+```
+
+## crosslink the merged ones
+```{bash eval=FALSE}
+ 7018  python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G40.pt2 --flep rawepvsfl/merge/Derecta_R2_G51_r12.epvsfl > crosslinks-merge/lr51mer12-pt40.txt
+ 7019  python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G48.pt2 --flep rawepvsfl/merge/Derecta_R2_G51_r12.epvsfl > crosslinks-merge/lr51mer12-pt48.txt
+ 7021  python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G20.pt2 --flep rawepvsfl/merge/Derecta_R2_G21_r123.epvsfl > crosslinks-merge/lr21mer123-pt20.txt
+ 7022  python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G20.pt2 --flep rawepvsfl/merge/Derecta_R2_G51_r12.epvsfl > crosslinks-merge/lr51mer12-pt20.txt
+ 7023  python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G34.pt2 --flep rawepvsfl/merge/Derecta_R2_G51_r12.epvsfl > crosslinks-merge/lr51mer12-pt34.txt
+ 7041  python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G34.pt2 --flep rawepvsfl/merge/merge_all.epvsfl > crosslinks-merge/all-pt34.txt
+ 7042  python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G20.pt2 --flep rawepvsfl/merge/merge_all.epvsfl > crosslinks-merge/all-pt20.txt
+ 7043  python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G40.pt2 --flep rawepvsfl/merge/merge_all.epvsfl > crosslinks-merge/all-pt40.txt
+ 7044  python ~/dev/te-tools/longread/popfreq-FL-EP.py --popte2 popte2/R2G48.pt2 --flep rawepvsfl/merge/merge_all.epvsfl > crosslinks-merge/all-pt48.txt
+```
+
+## merge the two generations 40 and 48
+I decided to go for these two in the paper
+```{bash eval=FALSE}
+[0,7067]rokofler%cat lr51mer12-pt40.txt|awk 'BEGIN{OFS="\t"}{print 40,$0}' > merge40-48.txt
+[0,7068]rokofler%cat lr51mer12-pt48.txt|awk 'BEGIN{OFS="\t"}{print 48,$0}' >> merge40-48.txt
+```
+
+## R analysis: boxplots + Wilcoxon Rank Sum Tests
+```{R}
+library(tidyverse)
+theme_set(theme_bw())
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-05-long-read/01-EP-vs-KP/crosslinks-merge/merge40-48.txt")
+names(h)<-c("gen","chrm","pos","type","popfreq")
+
+
+g<-ggplot(h, aes(x=type, y=popfreq)) + geom_boxplot()+facet_grid(.~gen)+ylab("population frequency")
+
+
+g2<-ggplot(h, aes(x=popfreq,)) + geom_histogram(binwidth=0.01)+facet_grid(.~type)
+
+plot(g)
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-05-long-read/01-EP-vs-KP/graphs/boxplots.pdf",width=3,height=2.5)
+plot(g)
+dev.off()
+
+
+print(wilcox.test(subset(h,type=="FL" & gen==40)$popfreq,subset(h,type=="EP"& gen==40)$popfreq))
+print(wilcox.test(subset(h,type=="FL" & gen==48)$popfreq,subset(h,type=="EP"& gen==48)$popfreq))
+print(t.test(subset(h,type=="FL" & gen==40)$popfreq,subset(h,type=="EP"& gen==40)$popfreq))
+print(t.test(subset(h,type=="FL" & gen==48)$popfreq,subset(h,type=="EP"& gen==48)$popfreq))
+```
+
+## Histogram 
+```{R}
+library(tidyverse)
+theme_set(theme_bw())
+h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-05-long-read/01-EP-vs-KP/crosslinks-merge/merge40-48.txt")
+names(h)<-c("gen","chrm","pos","type","popfreq")
+h<-subset(h,gen==40)
+
+
+g2<-ggplot(h, aes(x=popfreq,)) +   geom_histogram(color="black", fill="grey",binwidth=0.01)+facet_grid(.~type)+xlab("population frequency")
+g2
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-05-long-read/01-EP-vs-KP/graphs/histogra.pdf",width=4.4,height=2.5)
+plot(g2)
+dev.off()
+```
