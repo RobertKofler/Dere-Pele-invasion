@@ -57,7 +57,6 @@ cat expr_* |perl -pe 's/-/\t/'|perl -pe 's/-/\t/' >expression-forr.forr
 ```{R}
 library(tidyverse)
 library(RColorBrewer)
-library(plyr)
 theme_set(theme_bw())
 tresrep<-c("#e41a1c","#377eb8","#4daf4a")
 
@@ -72,7 +71,7 @@ t$generation<-as.numeric(substring(t$generation, 2))
 
 
 s<-ggplot()+geom_line(data=t,aes(x=generation,y=sense,color=replicate),size=1)+
-  # geom_point(data=cold,aes(x=generation,y=u,color=replicate),size=ls)+
+  geom_point(data=t,aes(x=generation,y=sense,color=replicate))+
   theme(strip.text=element_blank(),legend.position=c(0.1,0.9))+
 #  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
   ylab("expression [rpkm]")+scale_colour_manual(values=tresrep)+xlim(0,48)
@@ -88,7 +87,6 @@ dev.off()
 ```{R}
 library(tidyverse)
 library(RColorBrewer)
-library(plyr)
 theme_set(theme_bw())
 tresrep<-c("#e41a1c","#377eb8","#4daf4a")
 

@@ -230,7 +230,6 @@ outfile<-"/Users/rokofler/analysis/2021-Dere-Pele/analysis/2022-01-mRNA/04-visua
 ```{R}
 library(tidyverse)
 library(RColorBrewer)
-library(plyr)
 theme_set(theme_bw())
 tresrep<-c("#e41a1c","#377eb8","#4daf4a")
 
@@ -263,9 +262,9 @@ t<-rbind(t,missingvalues)
 
 
 s<-ggplot()+geom_line(data=t,aes(x=time,y=freq,color=rep),size=1)+
-  # geom_point(data=cold,aes(x=generation,y=u,color=replicate),size=ls)+
+  geom_point(data=t,aes(x=time,y=freq,color=rep))+
   theme(strip.text=element_blank(),legend.position=c(0.1,0.9))+
-  #  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
+
   ylab("splicing level IVS3 [srpm]")+scale_colour_manual(values=tresrep)+xlim(0,48)
 
 plot(s)
@@ -278,7 +277,6 @@ dev.off()
 ```{R}
 library(tidyverse)
 library(RColorBrewer)
-library(plyr)
 theme_set(theme_bw())
 tresrep<-c("#e41a1c","#377eb8","#4daf4a")
 
@@ -311,7 +309,7 @@ t<-rbind(t,missingvalues)
 
 
 s<-ggplot()+geom_line(data=t,aes(x=time,y=freq,color=rep),size=1,lty=3)+
-  # geom_point(data=cold,aes(x=generation,y=u,color=replicate),size=ls)+
+  geom_point(data=t,aes(x=time,y=freq,color=rep))+
   theme(strip.text=element_blank(),legend.position=c(0.1,0.9))+
   #  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
   ylab("splicing level IVS2 [rpm]")+scale_colour_manual(values=tresrep)+xlim(0,48)
@@ -326,7 +324,6 @@ dev.off()
 ```{R}
 library(tidyverse)
 library(RColorBrewer)
-library(plyr)
 theme_set(theme_bw())
 tresrep<-c("#e41a1c","#377eb8","#4daf4a")
 
@@ -359,7 +356,7 @@ t<-rbind(t,missingvalues)
 
 
 s<-ggplot()+geom_line(data=t,aes(x=time,y=freq,color=rep),size=1,lty=1)+
-  # geom_point(data=cold,aes(x=generation,y=u,color=replicate),size=ls)+
+   geom_point(data=t,aes(x=time,y=freq,color=rep))+
   theme(strip.text=element_blank(),legend.position=c(0.1,0.9))+
   #  geom_line(data=hot,aes(x=generation,y=u,color=replicate),linetype="dashed")+
   ylab("splicing level IVS1 [rpm]")+scale_colour_manual(values=tresrep)+xlim(0,48)
