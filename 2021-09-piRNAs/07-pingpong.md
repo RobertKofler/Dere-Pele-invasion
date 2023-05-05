@@ -1,16 +1,9 @@
----
-title: "Untitled"
-output: github_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+Untitled
+================
 
 # Preprocess
 
-
-```{bash eval=FALSE}
+``` bash
 # script parameters default:
 # parser.add_argument("--min-mq", type=int, required=False, dest="minmq", default=1, help="min mapping quality")
 #parser.add_argument("--max-mm", type=int, required=False, dest="maxmm", default=2, help="max mismatches")
@@ -68,7 +61,7 @@ cat R* |perl -pe 's/-/\t/' |perl -pe 's/G//' > forr.txt
 
 # Visualization supplement
 
-```{r}
+``` r
 library(ggplot2)
 theme_set(theme_bw())
 
@@ -80,14 +73,23 @@ h<-subset(h,strand=="s" & fam=="PPI251")
  
 g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(time~rep)+xlab("position")+ylab("ping-pong signature")
 plot(g)
+```
+
+![](07-pingpong_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+``` r
 pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/graphs/ere-pingpong.pdf",width=7,height=7)
  
 plot(g)
 dev.off()
 ```
 
+    ## quartz_off_screen 
+    ##                 2
+
 ## Visualization just replicate 2
-```{r}
+
+``` r
 library(ggplot2)
 theme_set(theme_bw())
 
@@ -99,15 +101,23 @@ h<-subset(h,strand=="s" & fam=="PPI251" & rep=="R2")
  
 g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(time~rep)+xlab("position")+ylab("ping-pong signature")
 plot(g)
+```
+
+![](07-pingpong_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+``` r
 pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/graphs/ere-pingpong-r2.pdf",width=2.7,height=10)
  
 plot(g)
 dev.off()
 ```
 
+    ## quartz_off_screen 
+    ##                 2
+
 # Visualization main 30
 
-```{r}
+``` r
 library(ggplot2)
 theme_set(theme_bw())
 
@@ -119,15 +129,23 @@ h<-subset(h,strand=="s" & fam=="PPI251" &time==30)
  
 g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(time~rep)+xlab("position")+ylab("ping-pong signature")
 plot(g)
+```
+
+![](07-pingpong_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
 pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/graphs/ere-pingpong-main-g30.pdf",width=7,height=2.5)
  
 plot(g)
 dev.off()
 ```
 
+    ## quartz_off_screen 
+    ##                 2
+
 # Visualization main 35
 
-```{r}
+``` r
 library(ggplot2)
 theme_set(theme_bw())
 
@@ -139,16 +157,38 @@ h<-subset(h,strand=="s" & fam=="PPI251" &time==35)
  
 g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(time~rep)+xlab("position")+ylab("ping-pong signature")
 plot(g)
+```
+
+![](07-pingpong_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+``` r
 pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/graphs/ere-pingpong-main-g35.pdf",width=7,height=2.5)
  
 plot(g)
 dev.off()
 ```
 
+    ## quartz_off_screen 
+    ##                 2
 
 ## Z-score
-```{r}
+
+``` r
 library(tidyverse)
+```
+
+    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
+
+    ## ✔ tibble  3.1.7     ✔ dplyr   1.0.9
+    ## ✔ tidyr   1.2.0     ✔ stringr 1.4.0
+    ## ✔ readr   2.1.2     ✔ forcats 0.5.1
+    ## ✔ purrr   0.3.4
+
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+
+``` r
 library(ggplot2)
 theme_set(theme_bw())
 
@@ -164,6 +204,12 @@ het<-subset(h,pos!=10)
 hin<-subset(h,pos==10)
 
 het<-het %>%group_by(time,rep)%>% dplyr::summarise(mean=mean(pps),sd=sqrt(var(pps)),key=key[1])
+```
+
+    ## `summarise()` has grouped output by 'time'. You can override using the
+    ## `.groups` argument.
+
+``` r
 m<-merge(x=het,y=hin, by = "key")
 m$zscore<-(m$pps-m$mean)/m$sd
 m$zround<-round(m$zscore,2)
@@ -171,7 +217,4 @@ m$ppsround<-round(m$pps,2)
 m$prob<-pnorm(m$zscore, mean = 0, sd = 1, lower.tail = FALSE)
 m$time<-m$time.x
 m$rep<-m$rep.x
- 
-
 ```
-

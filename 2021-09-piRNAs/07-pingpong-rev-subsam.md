@@ -1,0 +1,88 @@
+Untitled
+================
+
+# Downsample reads to same numbers
+
+Reviewer 3 commented that the absence of ping-pong may be due to
+insufficient reads in rep2. If downsampling rep1 and rep4 we could also
+see an absence of ping-pong.
+
+``` bash
+``` bash
+# script parameters default:
+# parser.add_argument("--min-mq", type=int, required=False, dest="minmq", default=1, help="min mapping quality")
+#parser.add_argument("--max-mm", type=int, required=False, dest="maxmm", default=2, help="max mismatches")
+#parser.add_argument("--sig-len", type=int, required=False, dest="siglen", default=19, help="signature length")
+#parser.add_argument("--min-ol", type=int, required=False, dest="minol", default=5, help="minimum number of overlapping ping-pong pairs")
+#parser.add_argument("--sample-id", type=str, required=True, dest="sid", default=10, help="the sample id")
+
+source ~/.zshrc 
+script="/Users/rokofler/dev/te-tools/ere/ping-pong-signature-subsample.py"
+mi=23
+ma=29
+inf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/raw-bam"
+ouf="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/raw-subsample"
+
+#--pi-min $mi --pi-max $ma
+
+# G35 = 728
+samtools view $inf/dere_ovaries_R1G35_trim_clean_sf_sorted.bam | python $script --sam - --sample-id R1-G35 --subsample 728 > $ouf/R1-G35.txt
+samtools view $inf/dere_ovaries_R2G35_trim_clean_sf_sorted.bam | python $script --sam - --sample-id R2-G35 --subsample 728 > $ouf/R2-G35.txt
+samtools view $inf/dere_ovaries_R4G35_trim_clean_sf_sorted.bam | python $script --sam - --sample-id R4-G35 --subsample 728 > $ouf/R4-G35.txt
+
+# G20 = 85
+samtools view $inf/dere_R1G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G20 --subsample 85 > $ouf/R1-G20.txt
+samtools view $inf/dere_R2G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G20 --subsample 85 > $ouf/R2-G20.txt
+samtools view $inf/dere_R4G20_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G20 --subsample 85 > $ouf/R4-G20.txt
+
+# G25 = 196
+samtools view $inf/dere_R1G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G25 --subsample 196 > $ouf/R1-G25.txt
+samtools view $inf/dere_R2G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G25 --subsample 196 > $ouf/R2-G25.txt
+samtools view $inf/dere_R4G25_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G25 --subsample 196 > $ouf/R4-G25.txt
+
+# G30 = 359
+samtools view $inf/dere_R1G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G30 --subsample 359 > $ouf/R1-G30.txt
+samtools view $inf/dere_R2G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G30 --subsample 359 > $ouf/R2-G30.txt
+samtools view $inf/dere_R4G30_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G30 --subsample 359 > $ouf/R4-G30.txt
+
+# G40 = 1709
+samtools view $inf/dere_R1G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G40 --subsample 1709 > $ouf/R1-G40.txt
+samtools view $inf/dere_R2G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G40 --subsample 1709 > $ouf/R2-G40.txt
+samtools view $inf/dere_R4G40_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G40 --subsample 1709 > $ouf/R4-G40.txt
+
+# G45 = 1068
+samtools view $inf/dere_R1G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R1-G45 --subsample 1068 > $ouf/R1-G45.txt
+samtools view $inf/dere_R2G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R2-G45 --subsample 1068 > $ouf/R2-G45.txt
+samtools view $inf/dere_R4G45_trim_clean_sf_sorted.bam | python $script  --sam - --sample-id R4-G45 --subsample 1068 > $ouf/R4-G45.txt
+
+cat R* |perl -pe 's/-/\t/' |perl -pe 's/G//' > forr.txt     
+```
+
+
+    # Visualization supplement
+
+
+    ```r
+    library(ggplot2)
+    theme_set(theme_bw())
+
+    h<-read.table("/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/raw-subsample/forr.txt")
+    names(h)<-c("rep","time","fam","strand","pos","pps")
+    h$time<-as.factor(h$time)
+    h$rep<-as.factor(h$rep)
+    h<-subset(h,strand=="s" & fam=="PPI251")
+     
+    g<-ggplot(h,aes(x=pos,y=pps))+geom_bar(stat="identity")+facet_grid(time~rep)+xlab("position")+ylab("ping-pong signature")
+    plot(g)
+
+![](07-pingpong-rev-subsam_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+``` r
+pdf(file="/Users/rokofler/analysis/2021-Dere-Pele/analysis/2021-09-piRNAs/07-pingpong/graphs/ere-pingpong-ds.pdf",width=7,height=7)
+ 
+plot(g)
+dev.off()
+```
+
+    ## quartz_off_screen 
+    ##                 2
